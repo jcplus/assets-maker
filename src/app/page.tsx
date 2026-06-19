@@ -213,7 +213,7 @@ export default function GeneratePage() {
                 </div>
                 <input
                   type="range"
-                  min={64}
+                  min={128}
                   max={1024}
                   step={8}
                   value={width}
@@ -235,7 +235,7 @@ export default function GeneratePage() {
                 </div>
                 <input
                   type="range"
-                  min={64}
+                  min={128}
                   max={1024}
                   step={8}
                   value={height}

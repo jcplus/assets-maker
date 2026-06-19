@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Modal } from "@/components/Modal";
 import { PresetForm, type Preset } from "@/components/PresetForm";
+import pkg from "../../package.json";
 
 type JobRow = {
   id: string;
@@ -28,7 +29,7 @@ export function Sidebar() {
       .catch(() => {});
     fetch("/api/presets")
       .then((r) => r.json())
-      .then((p: Preset[]) => setPresets(p.slice(0, 5)))
+      .then(setPresets)
       .catch(() => {});
   }, []);
 
@@ -60,10 +61,13 @@ export function Sidebar() {
 
         <Section
           title="Generations"
-          onViewAll={() =>
-            fetch("/api/jobs")
-              .then((r) => r.json())
-              .then(setAllJobs)
+          onViewAll={
+            jobs.length >= 10
+              ? () =>
+                  fetch("/api/jobs")
+                    .then((r) => r.json())
+                    .then(setAllJobs)
+              : undefined
           }
         >
           {jobs.length === 0 ? (
@@ -82,16 +86,19 @@ export function Sidebar() {
 
         <Section
           title="Presets"
-          onViewAll={() =>
-            fetch("/api/presets")
-              .then((r) => r.json())
-              .then(setAllPresets)
+          onViewAll={
+            presets.length >= 5
+              ? () =>
+                  fetch("/api/presets")
+                    .then((r) => r.json())
+                    .then(setAllPresets)
+              : undefined
           }
         >
           {presets.length === 0 ? (
             <Empty>暂无预设</Empty>
           ) : (
-            presets.map((p) => (
+            presets.slice(0, 5).map((p) => (
               <li key={p.id}>
                 <span className="block truncate rounded px-2 py-1 hover:bg-border/50">
                   {p.name}
@@ -107,13 +114,20 @@ export function Sidebar() {
         {menuOpen && (
           <div className="absolute bottom-16 left-3 right-3 z-10 overflow-hidden rounded-lg border border-border bg-background shadow-lg">
             <Link
+              href="/settings"
+              onClick={() => setMenuOpen(false)}
+              className="block px-3 py-2 text-sm hover:bg-panel"
+            >
+              Settings
+            </Link>
+            <Link
               href="/trash"
               onClick={() => setMenuOpen(false)}
               className="block px-3 py-2 text-sm hover:bg-panel"
             >
-              🗑 Trash
+              Trash
             </Link>
-            {["Profile", "Settings", "Help", "Logout"].map((item) => (
+            {["Profile", "Help", "Logout"].map((item) => (
               <button
                 key={item}
                 onClick={() => {
@@ -136,6 +150,7 @@ export function Sidebar() {
           </span>
           <span className="text-sm font-medium">James</span>
         </button>
+        <div className="mt-1 px-2 text-xs text-muted">v{pkg.version}</div>
       </div>
 
       {/* View all: Generations */}
@@ -212,7 +227,7 @@ function Section({
   children,
 }: {
   title: string;
-  onViewAll: () => void;
+  onViewAll?: () => void;
   children: React.ReactNode;
 }) {
   return (
@@ -221,12 +236,14 @@ function Section({
         {title}
       </h3>
       <ul className="space-y-0.5">{children}</ul>
-      <button
-        onClick={onViewAll}
-        className="mt-1 px-2 py-1 text-xs text-accent hover:underline"
-      >
-        View all
-      </button>
+      {onViewAll && (
+        <button
+          onClick={onViewAll}
+          className="mt-1 px-2 py-1 text-xs text-accent hover:underline"
+        >
+          View all
+        </button>
+      )}
     </div>
   );
 }

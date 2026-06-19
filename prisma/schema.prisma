@@ -102,3 +102,14 @@ model Asset {
   @@index([jobId])
   @@index([deletedAt])
 }
+
+/// 用户设置 —— 按用户存储，data 内按 section 分组（provider / generation / appearance...）
+model UserSettings {
+  id        String   @id @default(cuid())
+  /// 当前无鉴权，固定单用户标识；将来接入鉴权时映射真实用户
+  userId    String   @unique
+  /// 分 section 的设置：{ provider: {...}, generation: {...}, appearance: {...} }
+  data      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

@@ -18,8 +18,8 @@ const createSchema = z.object({
   promptTemplate: z.string().min(1),
   negativePrompt: z.string().default(""),
   lockedParams: z.object({
-    width: z.number().int().positive(),
-    height: z.number().int().positive(),
+    width: z.number().int().min(128),
+    height: z.number().int().min(128),
     steps: z.number().int().positive(),
     guidanceScale: z.number().positive(),
     seed: z.number().optional(),

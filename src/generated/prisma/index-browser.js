@@ -165,6 +165,14 @@ exports.Prisma.AssetScalarFieldEnum = {
   deletedAt: 'deletedAt'
 };
 
+exports.Prisma.UserSettingsScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  data: 'data',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -218,6 +226,11 @@ exports.Prisma.AssetOrderByRelevanceFieldEnum = {
   storageKey: 'storageKey',
   thumbKey: 'thumbKey'
 };
+
+exports.Prisma.UserSettingsOrderByRelevanceFieldEnum = {
+  id: 'id',
+  userId: 'userId'
+};
 exports.Category = exports.$Enums.Category = {
   scene: 'scene',
   tileset: 'tileset',
@@ -241,7 +254,8 @@ exports.AssetStatus = exports.$Enums.AssetStatus = {
 exports.Prisma.ModelName = {
   StylePreset: 'StylePreset',
   GenerationJob: 'GenerationJob',
-  Asset: 'Asset'
+  Asset: 'Asset',
+  UserSettings: 'UserSettings'
 };
 
 /**
