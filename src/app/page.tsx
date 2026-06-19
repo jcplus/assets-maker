@@ -38,8 +38,8 @@ export default function GeneratePage() {
   const [name, setName] = useState("");
   const [prompt, setPrompt] = useState("");
   const [negativePrompt, setNegativePrompt] = useState("");
-  const [width, setWidth] = useState(1024);
-  const [height, setHeight] = useState(576);
+  const [width, setWidth] = useState(256);
+  const [height, setHeight] = useState(256);
   const [count, setCount] = useState(4);
   const [steps, setSteps] = useState(8);
   const [guidanceScale, setGuidanceScale] = useState(4);
@@ -56,7 +56,6 @@ export default function GeneratePage() {
       .then((r) => r.json())
       .then((p: Preset[]) => {
         setPresets(p);
-        if (p[0]) applyPreset(p[0]);
       });
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
@@ -137,11 +136,8 @@ export default function GeneratePage() {
 
   return (
     <div className="mx-auto max-w-3xl p-8">
-      <header className="mb-6 flex items-center justify-between">
+      <header className="mb-6">
         <h1 className="text-2xl font-bold">New Generation</h1>
-        <Link href="/library" className="text-sm text-accent hover:underline">
-          资产库 →
-        </Link>
       </header>
 
       <div className="space-y-5">
@@ -161,14 +157,20 @@ export default function GeneratePage() {
             className={field}
             value={presetId}
             onChange={(e) => {
-              if (e.target.value === "__new__") {
+              const val = e.target.value;
+              if (val === "") {
+                setPresetId("");
+                return;
+              }
+              if (val === "__new__") {
                 setNewPreset(true);
                 return;
               }
-              const p = presets.find((x) => x.id === e.target.value);
+              const p = presets.find((x) => x.id === val);
               if (p) applyPreset(p);
             }}
           >
+            <option value="">请选择预设方案…</option>
             {presets.map((p) => (
               <option key={p.id} value={p.id}>
                 [{p.category}] {p.name}
@@ -196,29 +198,118 @@ export default function GeneratePage() {
 
         {/* 宽高 + 比例预览 */}
         <Row label="尺寸 / 比例">
-          <div className="flex items-center gap-3">
-            <input
-              type="number"
-              className={`${field} w-28`}
-              value={width}
-              onChange={(e) => setWidth(Number(e.target.value))}
-            />
-            <span className="text-muted">×</span>
-            <input
-              type="number"
-              className={`${field} w-28`}
-              value={height}
-              onChange={(e) => setHeight(Number(e.target.value))}
-            />
-            <span className="text-sm text-muted">{ratio(width, height)}</span>
-            <div
-              className="border border-border bg-panel"
-              style={{
-                width: 64,
-                height: width ? (64 * height) / width : 0,
-                maxHeight: 64,
-              }}
-            />
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-4">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="text-xs text-muted">宽度</span>
+                  <input
+                    type="number"
+                    step={8}
+                    className={`${field} w-28`}
+                    value={width}
+                    onChange={(e) => setWidth(Number(e.target.value))}
+                  />
+                </div>
+                <input
+                  type="range"
+                  min={64}
+                  max={1024}
+                  step={8}
+                  value={width}
+                  onChange={(e) => setWidth(Number(e.target.value))}
+                  className="w-full h-1.5 bg-border rounded-lg appearance-none cursor-pointer accent-accent"
+                />
+              </div>
+              <span className="text-muted self-center pt-4 font-bold">×</span>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="text-xs text-muted">高度</span>
+                  <input
+                    type="number"
+                    step={8}
+                    className={`${field} w-28`}
+                    value={height}
+                    onChange={(e) => setHeight(Number(e.target.value))}
+                  />
+                </div>
+                <input
+                  type="range"
+                  min={64}
+                  max={1024}
+                  step={8}
+                  value={height}
+                  onChange={(e) => setHeight(Number(e.target.value))}
+                  className="w-full h-1.5 bg-border rounded-lg appearance-none cursor-pointer accent-accent"
+                />
+              </div>
+              <div className="flex flex-col items-center justify-center min-w-16 pt-4">
+                <span className="text-xs text-muted mb-1 font-mono">{ratio(width, height)}</span>
+                <div
+                  className="border border-border bg-panel flex items-center justify-center overflow-hidden rounded-sm"
+                  style={{
+                    width: 48,
+                    height: 48,
+                  }}
+                >
+                  <div
+                    className="border border-accent bg-accent/20 rounded-sm transition-all duration-200"
+                    style={{
+                      width: width >= height ? 40 : (40 * width) / height,
+                      height: height >= width ? 40 : (40 * height) / width,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 常见比例的缩略图 */}
+            <div className="flex flex-wrap gap-2">
+              {[
+                { label: "1:1 (正方形)", w: 256, h: 256, iconW: 18, iconH: 18 },
+                { label: "16:9 (宽屏)", w: 512, h: 288, iconW: 24, iconH: 13.5 },
+                { label: "9:16 (竖屏)", w: 288, h: 512, iconW: 13.5, iconH: 24 },
+                { label: "4:3 (标准屏)", w: 384, h: 288, iconW: 21, iconH: 15.75 },
+                { label: "3:4 (竖向标准)", w: 288, h: 384, iconW: 15.75, iconH: 21 },
+              ].map((item) => {
+                const isActive = width === item.w && height === item.h;
+                return (
+                  <button
+                    key={item.label}
+                    type="button"
+                    onClick={() => {
+                      setWidth(item.w);
+                      setHeight(item.h);
+                    }}
+                    className={`flex items-center gap-2 rounded border px-3 py-1.5 text-xs transition-all hover:bg-panel ${
+                      isActive
+                        ? "border-accent bg-accent/10 text-accent font-medium shadow-sm"
+                        : "border-border text-muted hover:text-foreground"
+                    }`}
+                  >
+                    <div
+                      className={`border rounded-sm transition-colors flex items-center justify-center w-7 h-7 ${
+                        isActive ? "border-accent bg-accent/5" : "border-border bg-panel"
+                      }`}
+                    >
+                      <div
+                        className={`border rounded-[1px] transition-all duration-200 ${
+                          isActive ? "border-accent bg-accent/25" : "border-muted/50 bg-muted/10"
+                        }`}
+                        style={{
+                          width: item.iconW,
+                          height: item.iconH,
+                        }}
+                      />
+                    </div>
+                    <div className="text-left leading-tight">
+                      <div className="font-medium">{item.label}</div>
+                      <div className="text-[10px] opacity-75 font-mono">{item.w} × {item.h}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </Row>
 
@@ -287,7 +378,7 @@ export default function GeneratePage() {
         {/* 生成按钮 */}
         <button
           onClick={generate}
-          disabled={busy || !presetId}
+          disabled={busy || !presetId || !prompt.trim() || !width || !height || !count}
           className="w-full rounded bg-accent px-4 py-3 font-medium text-white disabled:opacity-50"
         >
           {busy ? "生成中…" : `生成 ${count} 张`}
