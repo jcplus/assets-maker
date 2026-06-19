@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.2] - 2026-06-19
+
+### Added
+- Aspect-ratio lock checkbox at the left of the width/height row on the generation page; locking keeps the current ratio when either dimension changes.
+- On opening the generation page, resume polling any in-progress generation (queued/running) detected via `/api/jobs`.
+
+### Changed
+- Narrowed the width/height number inputs and prevented their labels from wrapping.
+- Removed the `×` separator between the width and height controls.
+
 ## [0.2.1] - 2026-06-19
 
 ### Changed

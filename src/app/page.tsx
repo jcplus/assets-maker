@@ -45,22 +45,57 @@ export default function GeneratePage() {
   const [guidanceScale, setGuidanceScale] = useState(4);
   const [seed, setSeed] = useState(-1);
 
+  const [lockRatio, setLockRatio] = useState(false);
+  const ratioRef = useRef(1);
+
   const [busy, setBusy] = useState(false);
   const [job, setJob] = useState<JobStatus | null>(null);
   const [error, setError] = useState("");
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // 加载预设
+  // 加载预设 + 检查是否有进行中的生成
   useEffect(() => {
     fetch("/api/presets")
       .then((r) => r.json())
       .then((p: Preset[]) => {
         setPresets(p);
       });
+
+    // 页面打开时恢复正在进行中的生成
+    fetch("/api/jobs?recent=50")
+      .then((r) => r.json())
+      .then((jobs: { id: string; status: string }[]) => {
+        const active = jobs.find(
+          (j) => j.status === "queued" || j.status === "running"
+        );
+        if (active) {
+          setBusy(true);
+          poll(active.id);
+        }
+      })
+      .catch(() => {});
+
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  function snap8(n: number): number {
+    return Math.max(128, Math.min(1024, Math.round(n / 8) * 8));
+  }
+  function changeWidth(w: number) {
+    setWidth(w);
+    if (lockRatio) setHeight(snap8(w / ratioRef.current));
+  }
+  function changeHeight(h: number) {
+    setHeight(h);
+    if (lockRatio) setWidth(snap8(h * ratioRef.current));
+  }
+  function toggleLock() {
+    if (!lockRatio && width && height) ratioRef.current = width / height;
+    setLockRatio((v) => !v);
+  }
 
   function applyPreset(p: Preset) {
     setPresetId(p.id);
@@ -200,15 +235,26 @@ export default function GeneratePage() {
         <Row label="尺寸 / 比例">
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-4">
+              <label
+                className="flex items-center self-center pt-4"
+                title="锁定当前宽高比"
+              >
+                <input
+                  type="checkbox"
+                  checked={lockRatio}
+                  onChange={toggleLock}
+                  className="h-4 w-4 cursor-pointer accent-accent"
+                />
+              </label>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1.5">
-                  <span className="text-xs text-muted">宽度</span>
+                  <span className="text-xs text-muted whitespace-nowrap">宽度</span>
                   <input
                     type="number"
                     step={8}
-                    className={`${field} w-28`}
+                    className={`${field} w-20`}
                     value={width}
-                    onChange={(e) => setWidth(Number(e.target.value))}
+                    onChange={(e) => changeWidth(Number(e.target.value))}
                   />
                 </div>
                 <input
@@ -217,20 +263,19 @@ export default function GeneratePage() {
                   max={1024}
                   step={8}
                   value={width}
-                  onChange={(e) => setWidth(Number(e.target.value))}
+                  onChange={(e) => changeWidth(Number(e.target.value))}
                   className="w-full h-1.5 bg-border rounded-lg appearance-none cursor-pointer accent-accent"
                 />
               </div>
-              <span className="text-muted self-center pt-4 font-bold">×</span>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1.5">
-                  <span className="text-xs text-muted">高度</span>
+                  <span className="text-xs text-muted whitespace-nowrap">高度</span>
                   <input
                     type="number"
                     step={8}
-                    className={`${field} w-28`}
+                    className={`${field} w-20`}
                     value={height}
-                    onChange={(e) => setHeight(Number(e.target.value))}
+                    onChange={(e) => changeHeight(Number(e.target.value))}
                   />
                 </div>
                 <input
@@ -239,7 +284,7 @@ export default function GeneratePage() {
                   max={1024}
                   step={8}
                   value={height}
-                  onChange={(e) => setHeight(Number(e.target.value))}
+                  onChange={(e) => changeHeight(Number(e.target.value))}
                   className="w-full h-1.5 bg-border rounded-lg appearance-none cursor-pointer accent-accent"
                 />
               </div>
