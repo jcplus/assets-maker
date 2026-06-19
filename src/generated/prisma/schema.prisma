@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/// 素材分类
+enum Category {
+  scene
+  tileset
+  character
+  prop
+}
+
+enum JobStatus {
+  queued
+  running
+  done
+  failed
+}
+
+enum AssetStatus {
+  draft
+  approved
+  rejected
+}
+
+/// 风格预设 —— 系统核心，把视觉哲学固化成可复用对象，对抗风格漂移
+model StylePreset {
+  id             String   @id @default(cuid())
+  name           String
+  description    String?  @db.Text
+  category       Category
+  provider       String   @default("draw-things")
+  /// 带 {占位符} 的 prompt 模板
+  promptTemplate String   @db.Text
+  negativePrompt String   @db.Text
+  /// 锁定的生成参数 (steps, guidance, width, height, sampler...) —— 单次任务不可覆盖
+  lockedParams   Json
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  jobs   GenerationJob[]
+  assets Asset[]
+
+  @@index([category])
+}
+
+/// 一次批量生成
+model GenerationJob {
+  id        String      @id @default(cuid())
+  presetId  String
+  preset    StylePreset @relation(fields: [presetId], references: [id], onDelete: Cascade)
+  /// 填进模板占位符的值 + 数量
+  variables Json
+  count     Int         @default(1)
+  status    JobStatus   @default(queued)
+  error     String?     @db.Text
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  assets Asset[]
+
+  @@index([presetId])
+  @@index([status])
+}
+
+/// 单个素材
+model Asset {
+  id         String         @id @default(cuid())
+  jobId      String?
+  job        GenerationJob? @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  presetId   String?
+  preset     StylePreset?   @relation(fields: [presetId], references: [id], onDelete: SetNull)
+  category   Category
+  status     AssetStatus    @default(draft)
+  /// 相对 ASSETS_DIR 的存储 key
+  storageKey String
+  thumbKey   String?
+  width      Int
+  height     Int
+  /// 复现信息: seed, 实际 prompt, provider 参数
+  meta       Json
+  tags       Json?
+  createdAt  DateTime       @default(now())
+
+  @@index([category])
+  @@index([status])
+  @@index([jobId])
+}
