@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { ConfirmModal } from "@/components/ConfirmModal";
 
 type TrashData = {
   presets: { id: string; name: string; category: string }[];
@@ -13,6 +14,9 @@ type ItemType = "preset" | "job" | "asset";
 
 export default function TrashPage() {
   const [data, setData] = useState<TrashData | null>(null);
+  const [purging, setPurging] = useState<{ type: ItemType; id: string } | null>(
+    null
+  );
 
   const load = useCallback(() => {
     fetch("/api/trash")
@@ -24,16 +28,18 @@ export default function TrashPage() {
     load();
   }, [load]);
 
-  async function act(type: ItemType, id: string, method: "PATCH" | "DELETE") {
-    if (method === "DELETE" && !confirm("彻底删除？此操作不可恢复")) return;
-    await fetch("/api/trash", {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type, id }),
-    });
-    load();
-    window.dispatchEvent(new Event("data-updated"));
-  }
+  const run = useCallback(
+    async (type: ItemType, id: string, method: "PATCH" | "DELETE") => {
+      await fetch("/api/trash", {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type, id }),
+      });
+      load();
+      window.dispatchEvent(new Event("data-updated"));
+    },
+    [load]
+  );
 
   if (!data) return <div className="p-8 text-sm text-muted">加载中…</div>;
 
@@ -59,8 +65,8 @@ export default function TrashPage() {
             key={p.id}
             primary={p.name}
             secondary={p.category}
-            onRestore={() => act("preset", p.id, "PATCH")}
-            onDelete={() => act("preset", p.id, "DELETE")}
+            onRestore={() => run("preset", p.id, "PATCH")}
+            onDelete={() => setPurging({ type: "preset", id: p.id })}
           />
         ))}
       </Group>
@@ -71,8 +77,8 @@ export default function TrashPage() {
             key={j.id}
             primary={j.name}
             secondary={`${j.status} · ${j.count} 图`}
-            onRestore={() => act("job", j.id, "PATCH")}
-            onDelete={() => act("job", j.id, "DELETE")}
+            onRestore={() => run("job", j.id, "PATCH")}
+            onDelete={() => setPurging({ type: "job", id: j.id })}
           />
         ))}
       </Group>
@@ -83,11 +89,22 @@ export default function TrashPage() {
             key={a.id}
             primary={a.storageKey}
             secondary={a.category}
-            onRestore={() => act("asset", a.id, "PATCH")}
-            onDelete={() => act("asset", a.id, "DELETE")}
+            onRestore={() => run("asset", a.id, "PATCH")}
+            onDelete={() => setPurging({ type: "asset", id: a.id })}
           />
         ))}
       </Group>
+
+      {purging && (
+        <ConfirmModal
+          title="彻底删除"
+          message="彻底删除？此操作不可恢复"
+          confirmText="彻底删除"
+          danger
+          onConfirm={() => run(purging.type, purging.id, "DELETE")}
+          onClose={() => setPurging(null)}
+        />
+      )}
     </div>
   );
 }

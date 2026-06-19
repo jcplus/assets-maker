@@ -35,6 +35,25 @@ export async function GET(
   });
 }
 
+// 重命名
+export async function PATCH(
+  req: NextRequest,
+  ctx: { params: Promise<{ id: string }> }
+) {
+  const { id } = await ctx.params;
+  const body = await req.json().catch(() => ({}));
+  const name = typeof body?.name === "string" ? body.name.trim() : "";
+  if (!name) {
+    return NextResponse.json({ error: "name required" }, { status: 400 });
+  }
+  const job = await prisma.generationJob.update({
+    where: { id },
+    data: { name },
+    select: { id: true, name: true },
+  });
+  return NextResponse.json(job);
+}
+
 // 软删
 export async function DELETE(
   _req: NextRequest,
