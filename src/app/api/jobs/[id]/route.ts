@@ -8,18 +8,23 @@ export async function GET(
   ctx: { params: Promise<{ id: string }> }
 ) {
   const { id } = await ctx.params;
-  const job = await prisma.generationJob.findUnique({ where: { id } });
+  const job = await prisma.generationJob.findUnique({
+    where: { id },
+    include: {
+      preset: {
+        select: { id: true, category: true, variableSlots: true, lockedParams: true },
+      },
+    },
+  });
   if (!job) {
     return NextResponse.json({ error: "not found" }, { status: 404 });
   }
 
-  const assets =
-    job.status === "done"
-      ? await prisma.asset.findMany({
-          where: { jobId: id, deletedAt: null },
-          orderBy: { createdAt: "asc" },
-        })
-      : [];
+  // 始终返回已存在的资产，使前端在生成中也能逐张显示已完成的缩略图
+  const assets = await prisma.asset.findMany({
+    where: { jobId: id, deletedAt: null },
+    orderBy: { createdAt: "asc" },
+  });
 
   return NextResponse.json({
     id: job.id,
@@ -31,6 +36,8 @@ export async function GET(
     position: position(id),
     queueTotal: queueTotal(),
     error: job.error,
+    presetId: job.presetId,
+    preset: job.preset,
     assets,
   });
 }

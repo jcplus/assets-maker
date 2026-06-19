@@ -9,8 +9,21 @@ const providers: Record<string, ImageProvider> = {
 
 /** 一次生成任务的实际配置（存在 GenerationJob.variables 里） */
 export type JobConfig = {
-  prompt: string;
-  negativePrompt: string;
+  /** 变量层选择（复现与「同角色」延续用） */
+  subject: string;
+  angle: string;
+  pose: string;
+  extraPositive: string;
+  extraNegative: string;
+  /** 服务端按 Style Bible + 变量层拼装的最终串（实际发给 provider） */
+  composedPrompt: string;
+  composedNegative: string;
+  /** 逐张差异化提示词（如人物四视图），按下标取；缺省回退 composedPrompt */
+  composedPrompts?: string[];
+  /** 逐张角度 key（meta 记录用），与 composedPrompts 对齐；缺省回退 angle */
+  anglesPerImage?: string[];
+  /** 「同角色换动作/表情」延续时的来源资产 */
+  parentAssetId?: string;
   width: number;
   height: number;
   steps: number;
@@ -54,9 +67,12 @@ export async function runJob(jobId: string): Promise<void> {
         seed,
       };
 
+      const prompt = cfg.composedPrompts?.[i] ?? cfg.composedPrompt;
+      const imgAngle = cfg.anglesPerImage?.[i] ?? cfg.angle;
+
       const images = await provider.generate({
-        prompt: cfg.prompt,
-        negativePrompt: cfg.negativePrompt,
+        prompt,
+        negativePrompt: cfg.composedNegative,
         params,
         count: 1,
       });
@@ -73,7 +89,15 @@ export async function runJob(jobId: string): Promise<void> {
           storageKey: key,
           width: cfg.width,
           height: cfg.height,
-          meta: { ...img.meta, seed, renderedPrompt: cfg.prompt },
+          meta: {
+            ...img.meta,
+            seed,
+            renderedPrompt: prompt,
+            // 「同角色」延续所需的复现信息
+            subject: cfg.subject,
+            angle: imgAngle,
+            pose: cfg.pose,
+          },
         },
       });
 

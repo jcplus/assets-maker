@@ -36,9 +36,12 @@ model StylePreset {
   description    String?   @db.Text
   category       Category
   provider       String    @default("draw-things")
-  /// 带 {占位符} 的 prompt 模板
-  promptTemplate String    @db.Text
+  /// Style Bible 锁定层: { style, material, lighting, consistency, quality } —— 单次生成不可改写
+  styleBible     Json
+  /// 工业级负面提示词（锁定）
   negativePrompt String    @db.Text
+  /// 暴露的变量层与受控词表: { angles: string[], poses: string[], allowFreeSubject: boolean, defaultAngle?, defaultPose? }
+  variableSlots  Json
   /// 锁定的生成参数 (steps, guidance, width, height, sampler...) —— 单次任务不可覆盖
   lockedParams   Json
   createdAt      DateTime  @default(now())

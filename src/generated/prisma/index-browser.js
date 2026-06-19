@@ -127,8 +127,9 @@ exports.Prisma.StylePresetScalarFieldEnum = {
   description: 'description',
   category: 'category',
   provider: 'provider',
-  promptTemplate: 'promptTemplate',
+  styleBible: 'styleBible',
   negativePrompt: 'negativePrompt',
+  variableSlots: 'variableSlots',
   lockedParams: 'lockedParams',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -208,7 +209,6 @@ exports.Prisma.StylePresetOrderByRelevanceFieldEnum = {
   name: 'name',
   description: 'description',
   provider: 'provider',
-  promptTemplate: 'promptTemplate',
   negativePrompt: 'negativePrompt'
 };
 

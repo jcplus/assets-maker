@@ -15,8 +15,21 @@ const createSchema = z.object({
   description: z.string().optional(),
   category: z.enum(["scene", "tileset", "character", "prop"]),
   provider: z.string().default("draw-things"),
-  promptTemplate: z.string().min(1),
+  styleBible: z.object({
+    style: z.string().default(""),
+    material: z.string().default(""),
+    lighting: z.string().default(""),
+    consistency: z.string().default(""),
+    quality: z.string().default(""),
+  }),
   negativePrompt: z.string().default(""),
+  variableSlots: z.object({
+    angles: z.array(z.string()).default([]),
+    poses: z.array(z.string()).default([]),
+    allowFreeSubject: z.boolean().default(true),
+    defaultAngle: z.string().optional(),
+    defaultPose: z.string().optional(),
+  }),
   lockedParams: z.object({
     width: z.number().int().min(128),
     height: z.number().int().min(128),

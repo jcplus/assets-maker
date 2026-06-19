@@ -3,14 +3,23 @@
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
 
+type StyleBible = {
+  style: string;
+  material: string;
+  lighting: string;
+  consistency: string;
+  quality: string;
+};
+
 type Preset = {
   id: string;
   name: string;
   description?: string | null;
   category: string;
   provider: string;
-  promptTemplate: string;
+  styleBible: StyleBible;
   negativePrompt: string;
+  variableSlots: { angles: string[]; poses: string[]; allowFreeSubject: boolean };
   lockedParams: Record<string, number>;
 };
 
@@ -66,15 +75,38 @@ export default function PresetPage({
         {preset.description && (
           <Field label="描述">{preset.description}</Field>
         )}
-        <Field label="正面提示词模板">
-          <pre className="whitespace-pre-wrap font-mono text-xs">
-            {preset.promptTemplate}
-          </pre>
+        <Field label="🔒 Style Bible（锁定层）">
+          <dl className="space-y-2">
+            {(
+              [
+                ["风格 style", preset.styleBible.style],
+                ["材质 material", preset.styleBible.material],
+                ["光照 lighting", preset.styleBible.lighting],
+                ["一致性 consistency", preset.styleBible.consistency],
+                ["质量 quality", preset.styleBible.quality],
+              ] as const
+            ).map(([label, val]) => (
+              <div key={label}>
+                <dt className="text-muted">{label}</dt>
+                <dd className="font-mono text-xs">{val || "—"}</dd>
+              </div>
+            ))}
+          </dl>
         </Field>
         <Field label="负面提示词">
           <pre className="whitespace-pre-wrap font-mono text-xs">
             {preset.negativePrompt || "—"}
           </pre>
+        </Field>
+        <Field label="变量层词表">
+          <p className="text-xs">
+            <span className="text-muted">视角：</span>
+            {preset.variableSlots.angles.join(", ") || "—"}
+          </p>
+          <p className="text-xs">
+            <span className="text-muted">姿势：</span>
+            {preset.variableSlots.poses.join(", ") || "—"}
+          </p>
         </Field>
         <Field label="锁定参数">
           <dl className="grid grid-cols-2 gap-x-6 gap-y-1 sm:grid-cols-3">

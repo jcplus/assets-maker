@@ -1,23 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Modal } from "@/components/Modal";
 import { PresetForm, type Preset } from "@/components/PresetForm";
 import { estimateUnits } from "@/lib/estimate";
-
-type Asset = { id: string; storageKey: string; status: string };
-
-type JobStatus = {
-  status: "queued" | "running" | "done" | "failed";
-  completed: number;
-  count: number;
-  progress: number;
-  position: number;
-  queueTotal: number;
-  error: string | null;
-  assets: Asset[];
-};
+import {
+  ANGLES,
+  POSES,
+  composePrompt,
+  composeNegative,
+  type Category,
+} from "@/lib/prompt-layers";
 
 function gcd(a: number, b: number): number {
   return b === 0 ? a : gcd(b, a % b);
@@ -31,13 +25,19 @@ function ratio(w: number, h: number): string {
 const field = "w-full rounded border border-border bg-background p-2 text-sm";
 
 export default function GeneratePage() {
+  const router = useRouter();
   const [presets, setPresets] = useState<Preset[]>([]);
   const [presetId, setPresetId] = useState("");
+  const [preset, setPreset] = useState<Preset | null>(null);
   const [newPreset, setNewPreset] = useState(false);
 
   const [name, setName] = useState("");
-  const [prompt, setPrompt] = useState("");
-  const [negativePrompt, setNegativePrompt] = useState("");
+  // 变量层（受控词表 + 自由文本）
+  const [subject, setSubject] = useState("");
+  const [angle, setAngle] = useState("");
+  const [pose, setPose] = useState("");
+  const [extraPositive, setExtraPositive] = useState("");
+  const [extraNegative, setExtraNegative] = useState("");
   const [width, setWidth] = useState(256);
   const [height, setHeight] = useState(256);
   const [count, setCount] = useState(4);
@@ -49,36 +49,15 @@ export default function GeneratePage() {
   const ratioRef = useRef(1);
 
   const [busy, setBusy] = useState(false);
-  const [job, setJob] = useState<JobStatus | null>(null);
   const [error, setError] = useState("");
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // 加载预设 + 检查是否有进行中的生成
+  // 加载预设
   useEffect(() => {
     fetch("/api/presets")
       .then((r) => r.json())
       .then((p: Preset[]) => {
         setPresets(p);
       });
-
-    // 页面打开时恢复正在进行中的生成
-    fetch("/api/jobs?recent=50")
-      .then((r) => r.json())
-      .then((jobs: { id: string; status: string }[]) => {
-        const active = jobs.find(
-          (j) => j.status === "queued" || j.status === "running"
-        );
-        if (active) {
-          setBusy(true);
-          poll(active.id);
-        }
-      })
-      .catch(() => {});
-
-    return () => {
-      if (pollRef.current) clearInterval(pollRef.current);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function snap8(n: number): number {
@@ -99,13 +78,41 @@ export default function GeneratePage() {
 
   function applyPreset(p: Preset) {
     setPresetId(p.id);
-    setPrompt(p.promptTemplate);
-    setNegativePrompt(p.negativePrompt);
+    setPreset(p);
+    // 人物：四视图模式 —— 无视角选项、数量锁死 4，角度由服务端逐张注入
+    if (p.category === "character") {
+      setAngle("");
+      setCount(4);
+    } else {
+      setAngle(p.variableSlots.defaultAngle ?? p.variableSlots.angles[0] ?? "");
+    }
+    setPose(p.variableSlots.defaultPose ?? p.variableSlots.poses[0] ?? "");
+    setExtraPositive("");
+    setExtraNegative("");
     setWidth(p.lockedParams.width);
     setHeight(p.lockedParams.height);
     setSteps(p.lockedParams.steps);
     setGuidanceScale(p.lockedParams.guidanceScale);
   }
+
+  // 实时拼装预览：镜像服务端，按规范层序拼装 Style Bible + 变量层
+  const category = (preset?.category ?? "scene") as Category;
+  const isCharacter = category === "character";
+  const composedPrompt = useMemo(
+    () =>
+      preset
+        ? composePrompt(
+            preset.styleBible,
+            { subject, pose, angle, extraPositive },
+            category
+          )
+        : "",
+    [preset, subject, pose, angle, extraPositive, category]
+  );
+  const composedNegative = useMemo(
+    () => (preset ? composeNegative(preset.negativePrompt, extraNegative) : ""),
+    [preset, extraNegative]
+  );
 
   const units = estimateUnits({ steps, count, width, height });
 
@@ -113,7 +120,6 @@ export default function GeneratePage() {
     if (!presetId) return;
     setBusy(true);
     setError("");
-    setJob(null);
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
@@ -121,8 +127,11 @@ export default function GeneratePage() {
         body: JSON.stringify({
           name: name.trim() || "未命名生成",
           presetId,
-          prompt,
-          negativePrompt,
+          subject,
+          angle,
+          pose,
+          extraPositive,
+          extraNegative,
           width,
           height,
           count,
@@ -133,48 +142,23 @@ export default function GeneratePage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "生成失败");
-      poll(data.jobId);
+      // 任务一旦创建即是一条生成记录：跳转到详情页查看进度，
+      // 离开/关闭页面后仍可从 Generations 列表回到这里。
+      window.dispatchEvent(new Event("data-updated"));
+      router.push(`/generation/${data.jobId}`);
     } catch (e) {
       setError((e as Error).message);
       setBusy(false);
     }
   }
 
-  function poll(jobId: string) {
-    const fn = async () => {
-      const r = await fetch(`/api/jobs/${jobId}`);
-      const s: JobStatus = await r.json();
-      setJob(s);
-      if (s.status === "done" || s.status === "failed") {
-        if (pollRef.current) clearInterval(pollRef.current);
-        pollRef.current = null;
-        setBusy(false);
-        window.dispatchEvent(new Event("data-updated"));
-      }
-    };
-    fn();
-    pollRef.current = setInterval(fn, 1000);
-  }
-
-  async function setStatus(id: string, status: string) {
-    await fetch("/api/assets", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, status }),
-    });
-    setJob((j) =>
-      j
-        ? { ...j, assets: j.assets.map((a) => (a.id === id ? { ...a, status } : a)) }
-        : j
-    );
-  }
-
   return (
-    <div className="mx-auto max-w-3xl p-8">
+    <div className="mx-auto p-8 max-w-3xl">
       <header className="mb-6">
         <h1 className="text-2xl font-bold">New Generation</h1>
       </header>
 
+      <div>
       <div className="space-y-5">
         {/* 标题 */}
         <Row label="生成标题">
@@ -195,6 +179,7 @@ export default function GeneratePage() {
               const val = e.target.value;
               if (val === "") {
                 setPresetId("");
+                setPreset(null);
                 return;
               }
               if (val === "__new__") {
@@ -215,21 +200,111 @@ export default function GeneratePage() {
           </select>
         </Row>
 
-        {/* 正面 / 负面提示词 */}
-        <Row label="正面提示词">
-          <textarea
-            className={`${field} h-24`}
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-          />
-        </Row>
-        <Row label="负面提示词">
-          <textarea
-            className={`${field} h-20`}
-            value={negativePrompt}
-            onChange={(e) => setNegativePrompt(e.target.value)}
-          />
-        </Row>
+        {preset && (
+          <>
+            {/* 变量层：主体（自由文本）+ 角度/姿势（受控词表） */}
+            <Row label="主体描述">
+              <input
+                className={field}
+                placeholder="例：a young farmer girl with straw hat"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                disabled={!preset.variableSlots.allowFreeSubject}
+              />
+            </Row>
+            <div className={isCharacter ? "" : "grid grid-cols-2 gap-3"}>
+              {/* 人物为四视图模式，无单一视角选项；视角由服务端逐张注入 */}
+              {!isCharacter && (
+                <Row label="视角 / 镜头">
+                  <select
+                    className={field}
+                    value={angle}
+                    onChange={(e) => setAngle(e.target.value)}
+                  >
+                    {preset.variableSlots.angles.map((k) => (
+                      <option key={k} value={k}>
+                        {ANGLES[k]?.label ?? k}
+                      </option>
+                    ))}
+                  </select>
+                </Row>
+              )}
+              <Row label="姿势 / 动作">
+                <select
+                  className={field}
+                  value={pose}
+                  onChange={(e) => setPose(e.target.value)}
+                >
+                  {preset.variableSlots.poses.map((k) => (
+                    <option key={k} value={k}>
+                      {POSES[category]?.[k]?.label ?? k}
+                    </option>
+                  ))}
+                </select>
+              </Row>
+            </div>
+            {isCharacter && (
+              <p className="text-xs text-muted">
+                人物模式：将自动生成
+                <span className="text-foreground">正面 / 左侧面 / 右侧面 / 背面</span>
+                四视图（同一角色，共用 seed）
+              </p>
+            )}
+
+            {/* Style Bible：锁定层，只读展示，单次生成不可改写 */}
+            <details className="rounded border border-border bg-panel/50 p-3">
+              <summary className="cursor-pointer text-sm font-medium">
+                🔒 Style Bible（锁定 · 强制带到每张资产）
+              </summary>
+              <dl className="mt-3 space-y-2 text-xs">
+                {(
+                  [
+                    ["风格 style", preset.styleBible.style],
+                    ["材质 material", preset.styleBible.material],
+                    ["光照 lighting", preset.styleBible.lighting],
+                    ["一致性 consistency", preset.styleBible.consistency],
+                    ["质量 quality", preset.styleBible.quality],
+                  ] as const
+                ).map(([label, val]) => (
+                  <div key={label}>
+                    <dt className="text-muted">{label}</dt>
+                    <dd className="font-mono">{val || "—"}</dd>
+                  </div>
+                ))}
+              </dl>
+            </details>
+
+            {/* 可选追加 */}
+            <details className="rounded border border-border p-3">
+              <summary className="cursor-pointer text-sm font-medium">追加提示词（可选）</summary>
+              <div className="mt-3 space-y-3">
+                <Row label="追加正面">
+                  <input
+                    className={field}
+                    value={extraPositive}
+                    onChange={(e) => setExtraPositive(e.target.value)}
+                  />
+                </Row>
+                <Row label="追加负面">
+                  <input
+                    className={field}
+                    value={extraNegative}
+                    onChange={(e) => setExtraNegative(e.target.value)}
+                  />
+                </Row>
+              </div>
+            </details>
+
+            {/* 最终拼装预览（只读） */}
+            <Row label="最终提示词预览（服务端拼装）">
+              <pre className="max-h-40 overflow-auto rounded border border-border bg-background p-2 text-xs whitespace-pre-wrap font-mono text-muted">
+                {composedPrompt || "—"}
+                {"\n\n— negative —\n"}
+                {composedNegative || "—"}
+              </pre>
+            </Row>
+          </>
+        )}
 
         {/* 宽高 + 比例预览 */}
         <Row label="尺寸 / 比例">
@@ -358,14 +433,16 @@ export default function GeneratePage() {
           </div>
         </Row>
 
-        {/* 数量 */}
+        {/* 数量：人物四视图锁死 4 张 */}
         <Row label="生成数量">
           <input
             type="number"
             min={1}
             max={20}
-            className={`${field} w-28`}
-            value={count}
+            className={`${field} w-28 disabled:opacity-60`}
+            value={isCharacter ? 4 : count}
+            disabled={isCharacter}
+            title={isCharacter ? "人物模式锁定为四视图（4 张）" : undefined}
             onChange={(e) => setCount(Number(e.target.value))}
           />
         </Row>
@@ -423,15 +500,13 @@ export default function GeneratePage() {
         {/* 生成按钮 */}
         <button
           onClick={generate}
-          disabled={busy || !presetId || !prompt.trim() || !width || !height || !count}
+          disabled={busy || !presetId || !composedPrompt.trim() || !width || !height || !count}
           className="w-full rounded bg-accent px-4 py-3 font-medium text-white disabled:opacity-50"
         >
-          {busy ? "生成中…" : `生成 ${count} 张`}
+          {busy ? "创建中…" : `生成 ${count} 张`}
         </button>
         {error && <p className="text-sm text-red-500">{error}</p>}
-
-        {/* 进度 */}
-        {job && <Progress job={job} onStatus={setStatus} />}
+      </div>
       </div>
 
       {newPreset && (
@@ -446,68 +521,6 @@ export default function GeneratePage() {
           />
         </Modal>
       )}
-    </div>
-  );
-}
-
-function Progress({
-  job,
-  onStatus,
-}: {
-  job: JobStatus;
-  onStatus: (id: string, status: string) => void;
-}) {
-  if (job.status === "failed") {
-    return <p className="text-sm text-red-500">生成失败：{job.error}</p>;
-  }
-  if (job.position > 0) {
-    return (
-      <p className="text-sm text-muted">
-        排队中：前面还有 {job.position} 个 · 队列共 {job.queueTotal} 个
-      </p>
-    );
-  }
-  if (job.status !== "done") {
-    return (
-      <div className="space-y-1">
-        <div className="h-2 overflow-hidden rounded bg-panel">
-          <div
-            className="h-full bg-accent transition-all"
-            style={{ width: `${job.progress}%` }}
-          />
-        </div>
-        <p className="text-xs text-muted">
-          生成中 {job.completed}/{job.count}（{job.progress}%）
-        </p>
-      </div>
-    );
-  }
-  return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-      {job.assets.map((a) => (
-        <figure key={a.id} className="overflow-hidden rounded border border-border">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={`/api/assets/${a.storageKey}`}
-            alt=""
-            className="aspect-video w-full object-cover"
-          />
-          <figcaption className="flex gap-2 p-2 text-xs">
-            <button
-              onClick={() => onStatus(a.id, "approved")}
-              className={`rounded px-2 py-1 ${a.status === "approved" ? "bg-green-600 text-white" : "border border-border"}`}
-            >
-              ✓ 入库
-            </button>
-            <button
-              onClick={() => onStatus(a.id, "rejected")}
-              className={`rounded px-2 py-1 ${a.status === "rejected" ? "bg-red-600 text-white" : "border border-border"}`}
-            >
-              ✗ 弃
-            </button>
-          </figcaption>
-        </figure>
-      ))}
     </div>
   );
 }

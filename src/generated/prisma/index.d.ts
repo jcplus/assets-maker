@@ -1234,7 +1234,6 @@ export namespace Prisma {
     description: string | null
     category: $Enums.Category | null
     provider: string | null
-    promptTemplate: string | null
     negativePrompt: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -1247,7 +1246,6 @@ export namespace Prisma {
     description: string | null
     category: $Enums.Category | null
     provider: string | null
-    promptTemplate: string | null
     negativePrompt: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -1260,8 +1258,9 @@ export namespace Prisma {
     description: number
     category: number
     provider: number
-    promptTemplate: number
+    styleBible: number
     negativePrompt: number
+    variableSlots: number
     lockedParams: number
     createdAt: number
     updatedAt: number
@@ -1276,7 +1275,6 @@ export namespace Prisma {
     description?: true
     category?: true
     provider?: true
-    promptTemplate?: true
     negativePrompt?: true
     createdAt?: true
     updatedAt?: true
@@ -1289,7 +1287,6 @@ export namespace Prisma {
     description?: true
     category?: true
     provider?: true
-    promptTemplate?: true
     negativePrompt?: true
     createdAt?: true
     updatedAt?: true
@@ -1302,8 +1299,9 @@ export namespace Prisma {
     description?: true
     category?: true
     provider?: true
-    promptTemplate?: true
+    styleBible?: true
     negativePrompt?: true
+    variableSlots?: true
     lockedParams?: true
     createdAt?: true
     updatedAt?: true
@@ -1389,8 +1387,9 @@ export namespace Prisma {
     description: string | null
     category: $Enums.Category
     provider: string
-    promptTemplate: string
+    styleBible: JsonValue
     negativePrompt: string
+    variableSlots: JsonValue
     lockedParams: JsonValue
     createdAt: Date
     updatedAt: Date
@@ -1420,8 +1419,9 @@ export namespace Prisma {
     description?: boolean
     category?: boolean
     provider?: boolean
-    promptTemplate?: boolean
+    styleBible?: boolean
     negativePrompt?: boolean
+    variableSlots?: boolean
     lockedParams?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -1439,15 +1439,16 @@ export namespace Prisma {
     description?: boolean
     category?: boolean
     provider?: boolean
-    promptTemplate?: boolean
+    styleBible?: boolean
     negativePrompt?: boolean
+    variableSlots?: boolean
     lockedParams?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     deletedAt?: boolean
   }
 
-  export type StylePresetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "category" | "provider" | "promptTemplate" | "negativePrompt" | "lockedParams" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["stylePreset"]>
+  export type StylePresetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "category" | "provider" | "styleBible" | "negativePrompt" | "variableSlots" | "lockedParams" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["stylePreset"]>
   export type StylePresetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     jobs?: boolean | StylePreset$jobsArgs<ExtArgs>
     assets?: boolean | StylePreset$assetsArgs<ExtArgs>
@@ -1467,10 +1468,17 @@ export namespace Prisma {
       category: $Enums.Category
       provider: string
       /**
-       * 带 {占位符} 的 prompt 模板
+       * Style Bible 锁定层: { style, material, lighting, consistency, quality } —— 单次生成不可改写
        */
-      promptTemplate: string
+      styleBible: Prisma.JsonValue
+      /**
+       * 工业级负面提示词（锁定）
+       */
       negativePrompt: string
+      /**
+       * 暴露的变量层与受控词表: { angles: string[], poses: string[], allowFreeSubject: boolean, defaultAngle?, defaultPose? }
+       */
+      variableSlots: Prisma.JsonValue
       /**
        * 锁定的生成参数 (steps, guidance, width, height, sampler...) —— 单次任务不可覆盖
        */
@@ -1854,8 +1862,9 @@ export namespace Prisma {
     readonly description: FieldRef<"StylePreset", 'String'>
     readonly category: FieldRef<"StylePreset", 'Category'>
     readonly provider: FieldRef<"StylePreset", 'String'>
-    readonly promptTemplate: FieldRef<"StylePreset", 'String'>
+    readonly styleBible: FieldRef<"StylePreset", 'Json'>
     readonly negativePrompt: FieldRef<"StylePreset", 'String'>
+    readonly variableSlots: FieldRef<"StylePreset", 'Json'>
     readonly lockedParams: FieldRef<"StylePreset", 'Json'>
     readonly createdAt: FieldRef<"StylePreset", 'DateTime'>
     readonly updatedAt: FieldRef<"StylePreset", 'DateTime'>
@@ -5336,8 +5345,9 @@ export namespace Prisma {
     description: 'description',
     category: 'category',
     provider: 'provider',
-    promptTemplate: 'promptTemplate',
+    styleBible: 'styleBible',
     negativePrompt: 'negativePrompt',
+    variableSlots: 'variableSlots',
     lockedParams: 'lockedParams',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -5447,7 +5457,6 @@ export namespace Prisma {
     name: 'name',
     description: 'description',
     provider: 'provider',
-    promptTemplate: 'promptTemplate',
     negativePrompt: 'negativePrompt'
   };
 
@@ -5563,8 +5572,9 @@ export namespace Prisma {
     description?: StringNullableFilter<"StylePreset"> | string | null
     category?: EnumCategoryFilter<"StylePreset"> | $Enums.Category
     provider?: StringFilter<"StylePreset"> | string
-    promptTemplate?: StringFilter<"StylePreset"> | string
+    styleBible?: JsonFilter<"StylePreset">
     negativePrompt?: StringFilter<"StylePreset"> | string
+    variableSlots?: JsonFilter<"StylePreset">
     lockedParams?: JsonFilter<"StylePreset">
     createdAt?: DateTimeFilter<"StylePreset"> | Date | string
     updatedAt?: DateTimeFilter<"StylePreset"> | Date | string
@@ -5579,8 +5589,9 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     category?: SortOrder
     provider?: SortOrder
-    promptTemplate?: SortOrder
+    styleBible?: SortOrder
     negativePrompt?: SortOrder
+    variableSlots?: SortOrder
     lockedParams?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -5599,8 +5610,9 @@ export namespace Prisma {
     description?: StringNullableFilter<"StylePreset"> | string | null
     category?: EnumCategoryFilter<"StylePreset"> | $Enums.Category
     provider?: StringFilter<"StylePreset"> | string
-    promptTemplate?: StringFilter<"StylePreset"> | string
+    styleBible?: JsonFilter<"StylePreset">
     negativePrompt?: StringFilter<"StylePreset"> | string
+    variableSlots?: JsonFilter<"StylePreset">
     lockedParams?: JsonFilter<"StylePreset">
     createdAt?: DateTimeFilter<"StylePreset"> | Date | string
     updatedAt?: DateTimeFilter<"StylePreset"> | Date | string
@@ -5615,8 +5627,9 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     category?: SortOrder
     provider?: SortOrder
-    promptTemplate?: SortOrder
+    styleBible?: SortOrder
     negativePrompt?: SortOrder
+    variableSlots?: SortOrder
     lockedParams?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -5635,8 +5648,9 @@ export namespace Prisma {
     description?: StringNullableWithAggregatesFilter<"StylePreset"> | string | null
     category?: EnumCategoryWithAggregatesFilter<"StylePreset"> | $Enums.Category
     provider?: StringWithAggregatesFilter<"StylePreset"> | string
-    promptTemplate?: StringWithAggregatesFilter<"StylePreset"> | string
+    styleBible?: JsonWithAggregatesFilter<"StylePreset">
     negativePrompt?: StringWithAggregatesFilter<"StylePreset"> | string
+    variableSlots?: JsonWithAggregatesFilter<"StylePreset">
     lockedParams?: JsonWithAggregatesFilter<"StylePreset">
     createdAt?: DateTimeWithAggregatesFilter<"StylePreset"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"StylePreset"> | Date | string
@@ -5894,8 +5908,9 @@ export namespace Prisma {
     description?: string | null
     category: $Enums.Category
     provider?: string
-    promptTemplate: string
+    styleBible: JsonNullValueInput | InputJsonValue
     negativePrompt: string
+    variableSlots: JsonNullValueInput | InputJsonValue
     lockedParams: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -5910,8 +5925,9 @@ export namespace Prisma {
     description?: string | null
     category: $Enums.Category
     provider?: string
-    promptTemplate: string
+    styleBible: JsonNullValueInput | InputJsonValue
     negativePrompt: string
+    variableSlots: JsonNullValueInput | InputJsonValue
     lockedParams: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -5926,8 +5942,9 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumCategoryFieldUpdateOperationsInput | $Enums.Category
     provider?: StringFieldUpdateOperationsInput | string
-    promptTemplate?: StringFieldUpdateOperationsInput | string
+    styleBible?: JsonNullValueInput | InputJsonValue
     negativePrompt?: StringFieldUpdateOperationsInput | string
+    variableSlots?: JsonNullValueInput | InputJsonValue
     lockedParams?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -5942,8 +5959,9 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumCategoryFieldUpdateOperationsInput | $Enums.Category
     provider?: StringFieldUpdateOperationsInput | string
-    promptTemplate?: StringFieldUpdateOperationsInput | string
+    styleBible?: JsonNullValueInput | InputJsonValue
     negativePrompt?: StringFieldUpdateOperationsInput | string
+    variableSlots?: JsonNullValueInput | InputJsonValue
     lockedParams?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -5958,8 +5976,9 @@ export namespace Prisma {
     description?: string | null
     category: $Enums.Category
     provider?: string
-    promptTemplate: string
+    styleBible: JsonNullValueInput | InputJsonValue
     negativePrompt: string
+    variableSlots: JsonNullValueInput | InputJsonValue
     lockedParams: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -5972,8 +5991,9 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumCategoryFieldUpdateOperationsInput | $Enums.Category
     provider?: StringFieldUpdateOperationsInput | string
-    promptTemplate?: StringFieldUpdateOperationsInput | string
+    styleBible?: JsonNullValueInput | InputJsonValue
     negativePrompt?: StringFieldUpdateOperationsInput | string
+    variableSlots?: JsonNullValueInput | InputJsonValue
     lockedParams?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -5986,8 +6006,9 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumCategoryFieldUpdateOperationsInput | $Enums.Category
     provider?: StringFieldUpdateOperationsInput | string
-    promptTemplate?: StringFieldUpdateOperationsInput | string
+    styleBible?: JsonNullValueInput | InputJsonValue
     negativePrompt?: StringFieldUpdateOperationsInput | string
+    variableSlots?: JsonNullValueInput | InputJsonValue
     lockedParams?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -6380,8 +6401,9 @@ export namespace Prisma {
     description?: SortOrder
     category?: SortOrder
     provider?: SortOrder
-    promptTemplate?: SortOrder
+    styleBible?: SortOrder
     negativePrompt?: SortOrder
+    variableSlots?: SortOrder
     lockedParams?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -6394,7 +6416,6 @@ export namespace Prisma {
     description?: SortOrder
     category?: SortOrder
     provider?: SortOrder
-    promptTemplate?: SortOrder
     negativePrompt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -6407,7 +6428,6 @@ export namespace Prisma {
     description?: SortOrder
     category?: SortOrder
     provider?: SortOrder
-    promptTemplate?: SortOrder
     negativePrompt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -7405,8 +7425,9 @@ export namespace Prisma {
     description?: string | null
     category: $Enums.Category
     provider?: string
-    promptTemplate: string
+    styleBible: JsonNullValueInput | InputJsonValue
     negativePrompt: string
+    variableSlots: JsonNullValueInput | InputJsonValue
     lockedParams: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -7420,8 +7441,9 @@ export namespace Prisma {
     description?: string | null
     category: $Enums.Category
     provider?: string
-    promptTemplate: string
+    styleBible: JsonNullValueInput | InputJsonValue
     negativePrompt: string
+    variableSlots: JsonNullValueInput | InputJsonValue
     lockedParams: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -7491,8 +7513,9 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumCategoryFieldUpdateOperationsInput | $Enums.Category
     provider?: StringFieldUpdateOperationsInput | string
-    promptTemplate?: StringFieldUpdateOperationsInput | string
+    styleBible?: JsonNullValueInput | InputJsonValue
     negativePrompt?: StringFieldUpdateOperationsInput | string
+    variableSlots?: JsonNullValueInput | InputJsonValue
     lockedParams?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7506,8 +7529,9 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumCategoryFieldUpdateOperationsInput | $Enums.Category
     provider?: StringFieldUpdateOperationsInput | string
-    promptTemplate?: StringFieldUpdateOperationsInput | string
+    styleBible?: JsonNullValueInput | InputJsonValue
     negativePrompt?: StringFieldUpdateOperationsInput | string
+    variableSlots?: JsonNullValueInput | InputJsonValue
     lockedParams?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7570,8 +7594,9 @@ export namespace Prisma {
     description?: string | null
     category: $Enums.Category
     provider?: string
-    promptTemplate: string
+    styleBible: JsonNullValueInput | InputJsonValue
     negativePrompt: string
+    variableSlots: JsonNullValueInput | InputJsonValue
     lockedParams: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -7585,8 +7610,9 @@ export namespace Prisma {
     description?: string | null
     category: $Enums.Category
     provider?: string
-    promptTemplate: string
+    styleBible: JsonNullValueInput | InputJsonValue
     negativePrompt: string
+    variableSlots: JsonNullValueInput | InputJsonValue
     lockedParams: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -7655,8 +7681,9 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumCategoryFieldUpdateOperationsInput | $Enums.Category
     provider?: StringFieldUpdateOperationsInput | string
-    promptTemplate?: StringFieldUpdateOperationsInput | string
+    styleBible?: JsonNullValueInput | InputJsonValue
     negativePrompt?: StringFieldUpdateOperationsInput | string
+    variableSlots?: JsonNullValueInput | InputJsonValue
     lockedParams?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7670,8 +7697,9 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumCategoryFieldUpdateOperationsInput | $Enums.Category
     provider?: StringFieldUpdateOperationsInput | string
-    promptTemplate?: StringFieldUpdateOperationsInput | string
+    styleBible?: JsonNullValueInput | InputJsonValue
     negativePrompt?: StringFieldUpdateOperationsInput | string
+    variableSlots?: JsonNullValueInput | InputJsonValue
     lockedParams?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
