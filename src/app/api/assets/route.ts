@@ -9,6 +9,7 @@ export async function GET(req: NextRequest) {
 
   const assets = await prisma.asset.findMany({
     where: {
+      deletedAt: null,
       ...(category ? { category: category as never } : {}),
       ...(status ? { status: status as never } : {}),
     },
@@ -34,4 +35,19 @@ export async function PATCH(req: NextRequest) {
     data: { status: parsed.data.status },
   });
   return NextResponse.json(asset);
+}
+
+const deleteSchema = z.object({ id: z.string() });
+
+// 软删单个 asset（真删只在回收站 /api/trash）
+export async function DELETE(req: NextRequest) {
+  const parsed = deleteSchema.safeParse(await req.json());
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+  }
+  await prisma.asset.update({
+    where: { id: parsed.data.id },
+    data: { deletedAt: new Date() },
+  });
+  return NextResponse.json({ ok: true });
 }

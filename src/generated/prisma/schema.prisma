@@ -31,42 +31,50 @@ enum AssetStatus {
 
 /// 风格预设 —— 系统核心，把视觉哲学固化成可复用对象，对抗风格漂移
 model StylePreset {
-  id             String   @id @default(cuid())
+  id             String    @id @default(cuid())
   name           String
-  description    String?  @db.Text
+  description    String?   @db.Text
   category       Category
-  provider       String   @default("draw-things")
+  provider       String    @default("draw-things")
   /// 带 {占位符} 的 prompt 模板
-  promptTemplate String   @db.Text
-  negativePrompt String   @db.Text
+  promptTemplate String    @db.Text
+  negativePrompt String    @db.Text
   /// 锁定的生成参数 (steps, guidance, width, height, sampler...) —— 单次任务不可覆盖
   lockedParams   Json
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
 
   jobs   GenerationJob[]
   assets Asset[]
 
   @@index([category])
+  @@index([deletedAt])
 }
 
 /// 一次批量生成
 model GenerationJob {
   id        String      @id @default(cuid())
+  /// 生成标题
+  name      String
   presetId  String
   preset    StylePreset @relation(fields: [presetId], references: [id], onDelete: Cascade)
-  /// 填进模板占位符的值 + 数量
+  /// 本次实际配置: { prompt, negativePrompt, width, height, steps, guidanceScale, seed }
   variables Json
   count     Int         @default(1)
+  /// 已完成图片数，进度 = completed / count
+  completed Int         @default(0)
   status    JobStatus   @default(queued)
   error     String?     @db.Text
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+  deletedAt DateTime?
 
   assets Asset[]
 
   @@index([presetId])
   @@index([status])
+  @@index([deletedAt])
 }
 
 /// 单个素材
@@ -87,8 +95,10 @@ model Asset {
   meta       Json
   tags       Json?
   createdAt  DateTime       @default(now())
+  deletedAt  DateTime?
 
   @@index([category])
   @@index([status])
   @@index([jobId])
+  @@index([deletedAt])
 }

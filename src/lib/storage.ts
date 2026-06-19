@@ -1,4 +1,4 @@
-import { writeFile, mkdir, readFile } from "fs/promises";
+import { writeFile, mkdir, readFile, rm } from "fs/promises";
 import path from "path";
 
 /**
@@ -8,6 +8,8 @@ import path from "path";
 export interface StorageAdapter {
   put(key: string, data: Buffer): Promise<void>;
   get(key: string): Promise<Buffer>;
+  /** 删除（用于回收站真删）。不存在时静默 */
+  delete(key: string): Promise<void>;
   /** 浏览器可访问的 URL */
   url(key: string): string;
 }
@@ -22,6 +24,9 @@ class LocalStorage implements StorageAdapter {
   }
   async get(key: string): Promise<Buffer> {
     return readFile(path.join(ASSETS_DIR, key));
+  }
+  async delete(key: string): Promise<void> {
+    await rm(path.join(ASSETS_DIR, key), { force: true });
   }
   url(key: string): string {
     // 经由 /api/assets/[...key] 路由读出（见 app/api/assets）

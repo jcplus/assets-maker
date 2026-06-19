@@ -131,18 +131,22 @@ exports.Prisma.StylePresetScalarFieldEnum = {
   negativePrompt: 'negativePrompt',
   lockedParams: 'lockedParams',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
 };
 
 exports.Prisma.GenerationJobScalarFieldEnum = {
   id: 'id',
+  name: 'name',
   presetId: 'presetId',
   variables: 'variables',
   count: 'count',
+  completed: 'completed',
   status: 'status',
   error: 'error',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
 };
 
 exports.Prisma.AssetScalarFieldEnum = {
@@ -157,7 +161,8 @@ exports.Prisma.AssetScalarFieldEnum = {
   height: 'height',
   meta: 'meta',
   tags: 'tags',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  deletedAt: 'deletedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -201,6 +206,7 @@ exports.Prisma.StylePresetOrderByRelevanceFieldEnum = {
 
 exports.Prisma.GenerationJobOrderByRelevanceFieldEnum = {
   id: 'id',
+  name: 'name',
   presetId: 'presetId',
   error: 'error'
 };

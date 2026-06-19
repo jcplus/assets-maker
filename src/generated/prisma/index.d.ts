@@ -1155,6 +1155,7 @@ export namespace Prisma {
     negativePrompt: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    deletedAt: Date | null
   }
 
   export type StylePresetMaxAggregateOutputType = {
@@ -1167,6 +1168,7 @@ export namespace Prisma {
     negativePrompt: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    deletedAt: Date | null
   }
 
   export type StylePresetCountAggregateOutputType = {
@@ -1180,6 +1182,7 @@ export namespace Prisma {
     lockedParams: number
     createdAt: number
     updatedAt: number
+    deletedAt: number
     _all: number
   }
 
@@ -1194,6 +1197,7 @@ export namespace Prisma {
     negativePrompt?: true
     createdAt?: true
     updatedAt?: true
+    deletedAt?: true
   }
 
   export type StylePresetMaxAggregateInputType = {
@@ -1206,6 +1210,7 @@ export namespace Prisma {
     negativePrompt?: true
     createdAt?: true
     updatedAt?: true
+    deletedAt?: true
   }
 
   export type StylePresetCountAggregateInputType = {
@@ -1219,6 +1224,7 @@ export namespace Prisma {
     lockedParams?: true
     createdAt?: true
     updatedAt?: true
+    deletedAt?: true
     _all?: true
   }
 
@@ -1305,6 +1311,7 @@ export namespace Prisma {
     lockedParams: JsonValue
     createdAt: Date
     updatedAt: Date
+    deletedAt: Date | null
     _count: StylePresetCountAggregateOutputType | null
     _min: StylePresetMinAggregateOutputType | null
     _max: StylePresetMaxAggregateOutputType | null
@@ -1335,6 +1342,7 @@ export namespace Prisma {
     lockedParams?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    deletedAt?: boolean
     jobs?: boolean | StylePreset$jobsArgs<ExtArgs>
     assets?: boolean | StylePreset$assetsArgs<ExtArgs>
     _count?: boolean | StylePresetCountOutputTypeDefaultArgs<ExtArgs>
@@ -1353,9 +1361,10 @@ export namespace Prisma {
     lockedParams?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    deletedAt?: boolean
   }
 
-  export type StylePresetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "category" | "provider" | "promptTemplate" | "negativePrompt" | "lockedParams" | "createdAt" | "updatedAt", ExtArgs["result"]["stylePreset"]>
+  export type StylePresetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "category" | "provider" | "promptTemplate" | "negativePrompt" | "lockedParams" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["stylePreset"]>
   export type StylePresetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     jobs?: boolean | StylePreset$jobsArgs<ExtArgs>
     assets?: boolean | StylePreset$assetsArgs<ExtArgs>
@@ -1385,6 +1394,7 @@ export namespace Prisma {
       lockedParams: Prisma.JsonValue
       createdAt: Date
       updatedAt: Date
+      deletedAt: Date | null
     }, ExtArgs["result"]["stylePreset"]>
     composites: {}
   }
@@ -1766,6 +1776,7 @@ export namespace Prisma {
     readonly lockedParams: FieldRef<"StylePreset", 'Json'>
     readonly createdAt: FieldRef<"StylePreset", 'DateTime'>
     readonly updatedAt: FieldRef<"StylePreset", 'DateTime'>
+    readonly deletedAt: FieldRef<"StylePreset", 'DateTime'>
   }
     
 
@@ -2189,82 +2200,104 @@ export namespace Prisma {
 
   export type GenerationJobAvgAggregateOutputType = {
     count: number | null
+    completed: number | null
   }
 
   export type GenerationJobSumAggregateOutputType = {
     count: number | null
+    completed: number | null
   }
 
   export type GenerationJobMinAggregateOutputType = {
     id: string | null
+    name: string | null
     presetId: string | null
     count: number | null
+    completed: number | null
     status: $Enums.JobStatus | null
     error: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    deletedAt: Date | null
   }
 
   export type GenerationJobMaxAggregateOutputType = {
     id: string | null
+    name: string | null
     presetId: string | null
     count: number | null
+    completed: number | null
     status: $Enums.JobStatus | null
     error: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    deletedAt: Date | null
   }
 
   export type GenerationJobCountAggregateOutputType = {
     id: number
+    name: number
     presetId: number
     variables: number
     count: number
+    completed: number
     status: number
     error: number
     createdAt: number
     updatedAt: number
+    deletedAt: number
     _all: number
   }
 
 
   export type GenerationJobAvgAggregateInputType = {
     count?: true
+    completed?: true
   }
 
   export type GenerationJobSumAggregateInputType = {
     count?: true
+    completed?: true
   }
 
   export type GenerationJobMinAggregateInputType = {
     id?: true
+    name?: true
     presetId?: true
     count?: true
+    completed?: true
     status?: true
     error?: true
     createdAt?: true
     updatedAt?: true
+    deletedAt?: true
   }
 
   export type GenerationJobMaxAggregateInputType = {
     id?: true
+    name?: true
     presetId?: true
     count?: true
+    completed?: true
     status?: true
     error?: true
     createdAt?: true
     updatedAt?: true
+    deletedAt?: true
   }
 
   export type GenerationJobCountAggregateInputType = {
     id?: true
+    name?: true
     presetId?: true
     variables?: true
     count?: true
+    completed?: true
     status?: true
     error?: true
     createdAt?: true
     updatedAt?: true
+    deletedAt?: true
     _all?: true
   }
 
@@ -2356,13 +2389,16 @@ export namespace Prisma {
 
   export type GenerationJobGroupByOutputType = {
     id: string
+    name: string
     presetId: string
     variables: JsonValue
     count: number
+    completed: number
     status: $Enums.JobStatus
     error: string | null
     createdAt: Date
     updatedAt: Date
+    deletedAt: Date | null
     _count: GenerationJobCountAggregateOutputType | null
     _avg: GenerationJobAvgAggregateOutputType | null
     _sum: GenerationJobSumAggregateOutputType | null
@@ -2386,13 +2422,16 @@ export namespace Prisma {
 
   export type GenerationJobSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    name?: boolean
     presetId?: boolean
     variables?: boolean
     count?: boolean
+    completed?: boolean
     status?: boolean
     error?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    deletedAt?: boolean
     preset?: boolean | StylePresetDefaultArgs<ExtArgs>
     assets?: boolean | GenerationJob$assetsArgs<ExtArgs>
     _count?: boolean | GenerationJobCountOutputTypeDefaultArgs<ExtArgs>
@@ -2402,16 +2441,19 @@ export namespace Prisma {
 
   export type GenerationJobSelectScalar = {
     id?: boolean
+    name?: boolean
     presetId?: boolean
     variables?: boolean
     count?: boolean
+    completed?: boolean
     status?: boolean
     error?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    deletedAt?: boolean
   }
 
-  export type GenerationJobOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "presetId" | "variables" | "count" | "status" | "error" | "createdAt" | "updatedAt", ExtArgs["result"]["generationJob"]>
+  export type GenerationJobOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "presetId" | "variables" | "count" | "completed" | "status" | "error" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["generationJob"]>
   export type GenerationJobInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     preset?: boolean | StylePresetDefaultArgs<ExtArgs>
     assets?: boolean | GenerationJob$assetsArgs<ExtArgs>
@@ -2426,16 +2468,25 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      /**
+       * 生成标题
+       */
+      name: string
       presetId: string
       /**
-       * 填进模板占位符的值 + 数量
+       * 本次实际配置: { prompt, negativePrompt, width, height, steps, guidanceScale, seed }
        */
       variables: Prisma.JsonValue
       count: number
+      /**
+       * 已完成图片数，进度 = completed / count
+       */
+      completed: number
       status: $Enums.JobStatus
       error: string | null
       createdAt: Date
       updatedAt: Date
+      deletedAt: Date | null
     }, ExtArgs["result"]["generationJob"]>
     composites: {}
   }
@@ -2808,13 +2859,16 @@ export namespace Prisma {
    */
   interface GenerationJobFieldRefs {
     readonly id: FieldRef<"GenerationJob", 'String'>
+    readonly name: FieldRef<"GenerationJob", 'String'>
     readonly presetId: FieldRef<"GenerationJob", 'String'>
     readonly variables: FieldRef<"GenerationJob", 'Json'>
     readonly count: FieldRef<"GenerationJob", 'Int'>
+    readonly completed: FieldRef<"GenerationJob", 'Int'>
     readonly status: FieldRef<"GenerationJob", 'JobStatus'>
     readonly error: FieldRef<"GenerationJob", 'String'>
     readonly createdAt: FieldRef<"GenerationJob", 'DateTime'>
     readonly updatedAt: FieldRef<"GenerationJob", 'DateTime'>
+    readonly deletedAt: FieldRef<"GenerationJob", 'DateTime'>
   }
     
 
@@ -3233,6 +3287,7 @@ export namespace Prisma {
     width: number | null
     height: number | null
     createdAt: Date | null
+    deletedAt: Date | null
   }
 
   export type AssetMaxAggregateOutputType = {
@@ -3246,6 +3301,7 @@ export namespace Prisma {
     width: number | null
     height: number | null
     createdAt: Date | null
+    deletedAt: Date | null
   }
 
   export type AssetCountAggregateOutputType = {
@@ -3261,6 +3317,7 @@ export namespace Prisma {
     meta: number
     tags: number
     createdAt: number
+    deletedAt: number
     _all: number
   }
 
@@ -3286,6 +3343,7 @@ export namespace Prisma {
     width?: true
     height?: true
     createdAt?: true
+    deletedAt?: true
   }
 
   export type AssetMaxAggregateInputType = {
@@ -3299,6 +3357,7 @@ export namespace Prisma {
     width?: true
     height?: true
     createdAt?: true
+    deletedAt?: true
   }
 
   export type AssetCountAggregateInputType = {
@@ -3314,6 +3373,7 @@ export namespace Prisma {
     meta?: true
     tags?: true
     createdAt?: true
+    deletedAt?: true
     _all?: true
   }
 
@@ -3416,6 +3476,7 @@ export namespace Prisma {
     meta: JsonValue
     tags: JsonValue | null
     createdAt: Date
+    deletedAt: Date | null
     _count: AssetCountAggregateOutputType | null
     _avg: AssetAvgAggregateOutputType | null
     _sum: AssetSumAggregateOutputType | null
@@ -3450,6 +3511,7 @@ export namespace Prisma {
     meta?: boolean
     tags?: boolean
     createdAt?: boolean
+    deletedAt?: boolean
     job?: boolean | Asset$jobArgs<ExtArgs>
     preset?: boolean | Asset$presetArgs<ExtArgs>
   }, ExtArgs["result"]["asset"]>
@@ -3469,9 +3531,10 @@ export namespace Prisma {
     meta?: boolean
     tags?: boolean
     createdAt?: boolean
+    deletedAt?: boolean
   }
 
-  export type AssetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "jobId" | "presetId" | "category" | "status" | "storageKey" | "thumbKey" | "width" | "height" | "meta" | "tags" | "createdAt", ExtArgs["result"]["asset"]>
+  export type AssetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "jobId" | "presetId" | "category" | "status" | "storageKey" | "thumbKey" | "width" | "height" | "meta" | "tags" | "createdAt" | "deletedAt", ExtArgs["result"]["asset"]>
   export type AssetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     job?: boolean | Asset$jobArgs<ExtArgs>
     preset?: boolean | Asset$presetArgs<ExtArgs>
@@ -3502,6 +3565,7 @@ export namespace Prisma {
       meta: Prisma.JsonValue
       tags: Prisma.JsonValue | null
       createdAt: Date
+      deletedAt: Date | null
     }, ExtArgs["result"]["asset"]>
     composites: {}
   }
@@ -3885,6 +3949,7 @@ export namespace Prisma {
     readonly meta: FieldRef<"Asset", 'Json'>
     readonly tags: FieldRef<"Asset", 'Json'>
     readonly createdAt: FieldRef<"Asset", 'DateTime'>
+    readonly deletedAt: FieldRef<"Asset", 'DateTime'>
   }
     
 
@@ -4308,7 +4373,8 @@ export namespace Prisma {
     negativePrompt: 'negativePrompt',
     lockedParams: 'lockedParams',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    deletedAt: 'deletedAt'
   };
 
   export type StylePresetScalarFieldEnum = (typeof StylePresetScalarFieldEnum)[keyof typeof StylePresetScalarFieldEnum]
@@ -4316,13 +4382,16 @@ export namespace Prisma {
 
   export const GenerationJobScalarFieldEnum: {
     id: 'id',
+    name: 'name',
     presetId: 'presetId',
     variables: 'variables',
     count: 'count',
+    completed: 'completed',
     status: 'status',
     error: 'error',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    deletedAt: 'deletedAt'
   };
 
   export type GenerationJobScalarFieldEnum = (typeof GenerationJobScalarFieldEnum)[keyof typeof GenerationJobScalarFieldEnum]
@@ -4340,7 +4409,8 @@ export namespace Prisma {
     height: 'height',
     meta: 'meta',
     tags: 'tags',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    deletedAt: 'deletedAt'
   };
 
   export type AssetScalarFieldEnum = (typeof AssetScalarFieldEnum)[keyof typeof AssetScalarFieldEnum]
@@ -4408,6 +4478,7 @@ export namespace Prisma {
 
   export const GenerationJobOrderByRelevanceFieldEnum: {
     id: 'id',
+    name: 'name',
     presetId: 'presetId',
     error: 'error'
   };
@@ -4511,6 +4582,7 @@ export namespace Prisma {
     lockedParams?: JsonFilter<"StylePreset">
     createdAt?: DateTimeFilter<"StylePreset"> | Date | string
     updatedAt?: DateTimeFilter<"StylePreset"> | Date | string
+    deletedAt?: DateTimeNullableFilter<"StylePreset"> | Date | string | null
     jobs?: GenerationJobListRelationFilter
     assets?: AssetListRelationFilter
   }
@@ -4526,6 +4598,7 @@ export namespace Prisma {
     lockedParams?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    deletedAt?: SortOrderInput | SortOrder
     jobs?: GenerationJobOrderByRelationAggregateInput
     assets?: AssetOrderByRelationAggregateInput
     _relevance?: StylePresetOrderByRelevanceInput
@@ -4545,6 +4618,7 @@ export namespace Prisma {
     lockedParams?: JsonFilter<"StylePreset">
     createdAt?: DateTimeFilter<"StylePreset"> | Date | string
     updatedAt?: DateTimeFilter<"StylePreset"> | Date | string
+    deletedAt?: DateTimeNullableFilter<"StylePreset"> | Date | string | null
     jobs?: GenerationJobListRelationFilter
     assets?: AssetListRelationFilter
   }, "id">
@@ -4560,6 +4634,7 @@ export namespace Prisma {
     lockedParams?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    deletedAt?: SortOrderInput | SortOrder
     _count?: StylePresetCountOrderByAggregateInput
     _max?: StylePresetMaxOrderByAggregateInput
     _min?: StylePresetMinOrderByAggregateInput
@@ -4579,6 +4654,7 @@ export namespace Prisma {
     lockedParams?: JsonWithAggregatesFilter<"StylePreset">
     createdAt?: DateTimeWithAggregatesFilter<"StylePreset"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"StylePreset"> | Date | string
+    deletedAt?: DateTimeNullableWithAggregatesFilter<"StylePreset"> | Date | string | null
   }
 
   export type GenerationJobWhereInput = {
@@ -4586,26 +4662,32 @@ export namespace Prisma {
     OR?: GenerationJobWhereInput[]
     NOT?: GenerationJobWhereInput | GenerationJobWhereInput[]
     id?: StringFilter<"GenerationJob"> | string
+    name?: StringFilter<"GenerationJob"> | string
     presetId?: StringFilter<"GenerationJob"> | string
     variables?: JsonFilter<"GenerationJob">
     count?: IntFilter<"GenerationJob"> | number
+    completed?: IntFilter<"GenerationJob"> | number
     status?: EnumJobStatusFilter<"GenerationJob"> | $Enums.JobStatus
     error?: StringNullableFilter<"GenerationJob"> | string | null
     createdAt?: DateTimeFilter<"GenerationJob"> | Date | string
     updatedAt?: DateTimeFilter<"GenerationJob"> | Date | string
+    deletedAt?: DateTimeNullableFilter<"GenerationJob"> | Date | string | null
     preset?: XOR<StylePresetScalarRelationFilter, StylePresetWhereInput>
     assets?: AssetListRelationFilter
   }
 
   export type GenerationJobOrderByWithRelationInput = {
     id?: SortOrder
+    name?: SortOrder
     presetId?: SortOrder
     variables?: SortOrder
     count?: SortOrder
+    completed?: SortOrder
     status?: SortOrder
     error?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    deletedAt?: SortOrderInput | SortOrder
     preset?: StylePresetOrderByWithRelationInput
     assets?: AssetOrderByRelationAggregateInput
     _relevance?: GenerationJobOrderByRelevanceInput
@@ -4616,26 +4698,32 @@ export namespace Prisma {
     AND?: GenerationJobWhereInput | GenerationJobWhereInput[]
     OR?: GenerationJobWhereInput[]
     NOT?: GenerationJobWhereInput | GenerationJobWhereInput[]
+    name?: StringFilter<"GenerationJob"> | string
     presetId?: StringFilter<"GenerationJob"> | string
     variables?: JsonFilter<"GenerationJob">
     count?: IntFilter<"GenerationJob"> | number
+    completed?: IntFilter<"GenerationJob"> | number
     status?: EnumJobStatusFilter<"GenerationJob"> | $Enums.JobStatus
     error?: StringNullableFilter<"GenerationJob"> | string | null
     createdAt?: DateTimeFilter<"GenerationJob"> | Date | string
     updatedAt?: DateTimeFilter<"GenerationJob"> | Date | string
+    deletedAt?: DateTimeNullableFilter<"GenerationJob"> | Date | string | null
     preset?: XOR<StylePresetScalarRelationFilter, StylePresetWhereInput>
     assets?: AssetListRelationFilter
   }, "id">
 
   export type GenerationJobOrderByWithAggregationInput = {
     id?: SortOrder
+    name?: SortOrder
     presetId?: SortOrder
     variables?: SortOrder
     count?: SortOrder
+    completed?: SortOrder
     status?: SortOrder
     error?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    deletedAt?: SortOrderInput | SortOrder
     _count?: GenerationJobCountOrderByAggregateInput
     _avg?: GenerationJobAvgOrderByAggregateInput
     _max?: GenerationJobMaxOrderByAggregateInput
@@ -4648,13 +4736,16 @@ export namespace Prisma {
     OR?: GenerationJobScalarWhereWithAggregatesInput[]
     NOT?: GenerationJobScalarWhereWithAggregatesInput | GenerationJobScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"GenerationJob"> | string
+    name?: StringWithAggregatesFilter<"GenerationJob"> | string
     presetId?: StringWithAggregatesFilter<"GenerationJob"> | string
     variables?: JsonWithAggregatesFilter<"GenerationJob">
     count?: IntWithAggregatesFilter<"GenerationJob"> | number
+    completed?: IntWithAggregatesFilter<"GenerationJob"> | number
     status?: EnumJobStatusWithAggregatesFilter<"GenerationJob"> | $Enums.JobStatus
     error?: StringNullableWithAggregatesFilter<"GenerationJob"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"GenerationJob"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"GenerationJob"> | Date | string
+    deletedAt?: DateTimeNullableWithAggregatesFilter<"GenerationJob"> | Date | string | null
   }
 
   export type AssetWhereInput = {
@@ -4673,6 +4764,7 @@ export namespace Prisma {
     meta?: JsonFilter<"Asset">
     tags?: JsonNullableFilter<"Asset">
     createdAt?: DateTimeFilter<"Asset"> | Date | string
+    deletedAt?: DateTimeNullableFilter<"Asset"> | Date | string | null
     job?: XOR<GenerationJobNullableScalarRelationFilter, GenerationJobWhereInput> | null
     preset?: XOR<StylePresetNullableScalarRelationFilter, StylePresetWhereInput> | null
   }
@@ -4690,6 +4782,7 @@ export namespace Prisma {
     meta?: SortOrder
     tags?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    deletedAt?: SortOrderInput | SortOrder
     job?: GenerationJobOrderByWithRelationInput
     preset?: StylePresetOrderByWithRelationInput
     _relevance?: AssetOrderByRelevanceInput
@@ -4711,6 +4804,7 @@ export namespace Prisma {
     meta?: JsonFilter<"Asset">
     tags?: JsonNullableFilter<"Asset">
     createdAt?: DateTimeFilter<"Asset"> | Date | string
+    deletedAt?: DateTimeNullableFilter<"Asset"> | Date | string | null
     job?: XOR<GenerationJobNullableScalarRelationFilter, GenerationJobWhereInput> | null
     preset?: XOR<StylePresetNullableScalarRelationFilter, StylePresetWhereInput> | null
   }, "id">
@@ -4728,6 +4822,7 @@ export namespace Prisma {
     meta?: SortOrder
     tags?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    deletedAt?: SortOrderInput | SortOrder
     _count?: AssetCountOrderByAggregateInput
     _avg?: AssetAvgOrderByAggregateInput
     _max?: AssetMaxOrderByAggregateInput
@@ -4751,6 +4846,7 @@ export namespace Prisma {
     meta?: JsonWithAggregatesFilter<"Asset">
     tags?: JsonNullableWithAggregatesFilter<"Asset">
     createdAt?: DateTimeWithAggregatesFilter<"Asset"> | Date | string
+    deletedAt?: DateTimeNullableWithAggregatesFilter<"Asset"> | Date | string | null
   }
 
   export type StylePresetCreateInput = {
@@ -4764,6 +4860,7 @@ export namespace Prisma {
     lockedParams: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    deletedAt?: Date | string | null
     jobs?: GenerationJobCreateNestedManyWithoutPresetInput
     assets?: AssetCreateNestedManyWithoutPresetInput
   }
@@ -4779,6 +4876,7 @@ export namespace Prisma {
     lockedParams: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    deletedAt?: Date | string | null
     jobs?: GenerationJobUncheckedCreateNestedManyWithoutPresetInput
     assets?: AssetUncheckedCreateNestedManyWithoutPresetInput
   }
@@ -4794,6 +4892,7 @@ export namespace Prisma {
     lockedParams?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     jobs?: GenerationJobUpdateManyWithoutPresetNestedInput
     assets?: AssetUpdateManyWithoutPresetNestedInput
   }
@@ -4809,6 +4908,7 @@ export namespace Prisma {
     lockedParams?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     jobs?: GenerationJobUncheckedUpdateManyWithoutPresetNestedInput
     assets?: AssetUncheckedUpdateManyWithoutPresetNestedInput
   }
@@ -4824,6 +4924,7 @@ export namespace Prisma {
     lockedParams: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    deletedAt?: Date | string | null
   }
 
   export type StylePresetUpdateManyMutationInput = {
@@ -4837,6 +4938,7 @@ export namespace Prisma {
     lockedParams?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type StylePresetUncheckedUpdateManyInput = {
@@ -4850,86 +4952,108 @@ export namespace Prisma {
     lockedParams?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type GenerationJobCreateInput = {
     id?: string
+    name: string
     variables: JsonNullValueInput | InputJsonValue
     count?: number
+    completed?: number
     status?: $Enums.JobStatus
     error?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    deletedAt?: Date | string | null
     preset: StylePresetCreateNestedOneWithoutJobsInput
     assets?: AssetCreateNestedManyWithoutJobInput
   }
 
   export type GenerationJobUncheckedCreateInput = {
     id?: string
+    name: string
     presetId: string
     variables: JsonNullValueInput | InputJsonValue
     count?: number
+    completed?: number
     status?: $Enums.JobStatus
     error?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    deletedAt?: Date | string | null
     assets?: AssetUncheckedCreateNestedManyWithoutJobInput
   }
 
   export type GenerationJobUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
     variables?: JsonNullValueInput | InputJsonValue
     count?: IntFieldUpdateOperationsInput | number
+    completed?: IntFieldUpdateOperationsInput | number
     status?: EnumJobStatusFieldUpdateOperationsInput | $Enums.JobStatus
     error?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     preset?: StylePresetUpdateOneRequiredWithoutJobsNestedInput
     assets?: AssetUpdateManyWithoutJobNestedInput
   }
 
   export type GenerationJobUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
     presetId?: StringFieldUpdateOperationsInput | string
     variables?: JsonNullValueInput | InputJsonValue
     count?: IntFieldUpdateOperationsInput | number
+    completed?: IntFieldUpdateOperationsInput | number
     status?: EnumJobStatusFieldUpdateOperationsInput | $Enums.JobStatus
     error?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assets?: AssetUncheckedUpdateManyWithoutJobNestedInput
   }
 
   export type GenerationJobCreateManyInput = {
     id?: string
+    name: string
     presetId: string
     variables: JsonNullValueInput | InputJsonValue
     count?: number
+    completed?: number
     status?: $Enums.JobStatus
     error?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    deletedAt?: Date | string | null
   }
 
   export type GenerationJobUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
     variables?: JsonNullValueInput | InputJsonValue
     count?: IntFieldUpdateOperationsInput | number
+    completed?: IntFieldUpdateOperationsInput | number
     status?: EnumJobStatusFieldUpdateOperationsInput | $Enums.JobStatus
     error?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type GenerationJobUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
     presetId?: StringFieldUpdateOperationsInput | string
     variables?: JsonNullValueInput | InputJsonValue
     count?: IntFieldUpdateOperationsInput | number
+    completed?: IntFieldUpdateOperationsInput | number
     status?: EnumJobStatusFieldUpdateOperationsInput | $Enums.JobStatus
     error?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type AssetCreateInput = {
@@ -4943,6 +5067,7 @@ export namespace Prisma {
     meta: JsonNullValueInput | InputJsonValue
     tags?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    deletedAt?: Date | string | null
     job?: GenerationJobCreateNestedOneWithoutAssetsInput
     preset?: StylePresetCreateNestedOneWithoutAssetsInput
   }
@@ -4960,6 +5085,7 @@ export namespace Prisma {
     meta: JsonNullValueInput | InputJsonValue
     tags?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    deletedAt?: Date | string | null
   }
 
   export type AssetUpdateInput = {
@@ -4973,6 +5099,7 @@ export namespace Prisma {
     meta?: JsonNullValueInput | InputJsonValue
     tags?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     job?: GenerationJobUpdateOneWithoutAssetsNestedInput
     preset?: StylePresetUpdateOneWithoutAssetsNestedInput
   }
@@ -4990,6 +5117,7 @@ export namespace Prisma {
     meta?: JsonNullValueInput | InputJsonValue
     tags?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type AssetCreateManyInput = {
@@ -5005,6 +5133,7 @@ export namespace Prisma {
     meta: JsonNullValueInput | InputJsonValue
     tags?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    deletedAt?: Date | string | null
   }
 
   export type AssetUpdateManyMutationInput = {
@@ -5018,6 +5147,7 @@ export namespace Prisma {
     meta?: JsonNullValueInput | InputJsonValue
     tags?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type AssetUncheckedUpdateManyInput = {
@@ -5033,6 +5163,7 @@ export namespace Prisma {
     meta?: JsonNullValueInput | InputJsonValue
     tags?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -5106,6 +5237,17 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type GenerationJobListRelationFilter = {
     every?: GenerationJobWhereInput
     some?: GenerationJobWhereInput
@@ -5148,6 +5290,7 @@ export namespace Prisma {
     lockedParams?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    deletedAt?: SortOrder
   }
 
   export type StylePresetMaxOrderByAggregateInput = {
@@ -5160,6 +5303,7 @@ export namespace Prisma {
     negativePrompt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    deletedAt?: SortOrder
   }
 
   export type StylePresetMinOrderByAggregateInput = {
@@ -5172,6 +5316,7 @@ export namespace Prisma {
     negativePrompt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    deletedAt?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -5260,6 +5405,20 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -5291,41 +5450,52 @@ export namespace Prisma {
 
   export type GenerationJobCountOrderByAggregateInput = {
     id?: SortOrder
+    name?: SortOrder
     presetId?: SortOrder
     variables?: SortOrder
     count?: SortOrder
+    completed?: SortOrder
     status?: SortOrder
     error?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    deletedAt?: SortOrder
   }
 
   export type GenerationJobAvgOrderByAggregateInput = {
     count?: SortOrder
+    completed?: SortOrder
   }
 
   export type GenerationJobMaxOrderByAggregateInput = {
     id?: SortOrder
+    name?: SortOrder
     presetId?: SortOrder
     count?: SortOrder
+    completed?: SortOrder
     status?: SortOrder
     error?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    deletedAt?: SortOrder
   }
 
   export type GenerationJobMinOrderByAggregateInput = {
     id?: SortOrder
+    name?: SortOrder
     presetId?: SortOrder
     count?: SortOrder
+    completed?: SortOrder
     status?: SortOrder
     error?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    deletedAt?: SortOrder
   }
 
   export type GenerationJobSumOrderByAggregateInput = {
     count?: SortOrder
+    completed?: SortOrder
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
@@ -5413,6 +5583,7 @@ export namespace Prisma {
     meta?: SortOrder
     tags?: SortOrder
     createdAt?: SortOrder
+    deletedAt?: SortOrder
   }
 
   export type AssetAvgOrderByAggregateInput = {
@@ -5431,6 +5602,7 @@ export namespace Prisma {
     width?: SortOrder
     height?: SortOrder
     createdAt?: SortOrder
+    deletedAt?: SortOrder
   }
 
   export type AssetMinOrderByAggregateInput = {
@@ -5444,6 +5616,7 @@ export namespace Prisma {
     width?: SortOrder
     height?: SortOrder
     createdAt?: SortOrder
+    deletedAt?: SortOrder
   }
 
   export type AssetSumOrderByAggregateInput = {
@@ -5529,6 +5702,10 @@ export namespace Prisma {
 
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
   }
 
   export type GenerationJobUpdateManyWithoutPresetNestedInput = {
@@ -5739,6 +5916,17 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[]
@@ -5844,6 +6032,20 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
   export type NestedEnumJobStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.JobStatus | EnumJobStatusFieldRefInput<$PrismaModel>
     in?: $Enums.JobStatus[]
@@ -5930,23 +6132,29 @@ export namespace Prisma {
 
   export type GenerationJobCreateWithoutPresetInput = {
     id?: string
+    name: string
     variables: JsonNullValueInput | InputJsonValue
     count?: number
+    completed?: number
     status?: $Enums.JobStatus
     error?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    deletedAt?: Date | string | null
     assets?: AssetCreateNestedManyWithoutJobInput
   }
 
   export type GenerationJobUncheckedCreateWithoutPresetInput = {
     id?: string
+    name: string
     variables: JsonNullValueInput | InputJsonValue
     count?: number
+    completed?: number
     status?: $Enums.JobStatus
     error?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    deletedAt?: Date | string | null
     assets?: AssetUncheckedCreateNestedManyWithoutJobInput
   }
 
@@ -5971,6 +6179,7 @@ export namespace Prisma {
     meta: JsonNullValueInput | InputJsonValue
     tags?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    deletedAt?: Date | string | null
     job?: GenerationJobCreateNestedOneWithoutAssetsInput
   }
 
@@ -5986,6 +6195,7 @@ export namespace Prisma {
     meta: JsonNullValueInput | InputJsonValue
     tags?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    deletedAt?: Date | string | null
   }
 
   export type AssetCreateOrConnectWithoutPresetInput = {
@@ -6019,13 +6229,16 @@ export namespace Prisma {
     OR?: GenerationJobScalarWhereInput[]
     NOT?: GenerationJobScalarWhereInput | GenerationJobScalarWhereInput[]
     id?: StringFilter<"GenerationJob"> | string
+    name?: StringFilter<"GenerationJob"> | string
     presetId?: StringFilter<"GenerationJob"> | string
     variables?: JsonFilter<"GenerationJob">
     count?: IntFilter<"GenerationJob"> | number
+    completed?: IntFilter<"GenerationJob"> | number
     status?: EnumJobStatusFilter<"GenerationJob"> | $Enums.JobStatus
     error?: StringNullableFilter<"GenerationJob"> | string | null
     createdAt?: DateTimeFilter<"GenerationJob"> | Date | string
     updatedAt?: DateTimeFilter<"GenerationJob"> | Date | string
+    deletedAt?: DateTimeNullableFilter<"GenerationJob"> | Date | string | null
   }
 
   export type AssetUpsertWithWhereUniqueWithoutPresetInput = {
@@ -6060,6 +6273,7 @@ export namespace Prisma {
     meta?: JsonFilter<"Asset">
     tags?: JsonNullableFilter<"Asset">
     createdAt?: DateTimeFilter<"Asset"> | Date | string
+    deletedAt?: DateTimeNullableFilter<"Asset"> | Date | string | null
   }
 
   export type StylePresetCreateWithoutJobsInput = {
@@ -6073,6 +6287,7 @@ export namespace Prisma {
     lockedParams: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    deletedAt?: Date | string | null
     assets?: AssetCreateNestedManyWithoutPresetInput
   }
 
@@ -6087,6 +6302,7 @@ export namespace Prisma {
     lockedParams: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    deletedAt?: Date | string | null
     assets?: AssetUncheckedCreateNestedManyWithoutPresetInput
   }
 
@@ -6106,6 +6322,7 @@ export namespace Prisma {
     meta: JsonNullValueInput | InputJsonValue
     tags?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    deletedAt?: Date | string | null
     preset?: StylePresetCreateNestedOneWithoutAssetsInput
   }
 
@@ -6121,6 +6338,7 @@ export namespace Prisma {
     meta: JsonNullValueInput | InputJsonValue
     tags?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    deletedAt?: Date | string | null
   }
 
   export type AssetCreateOrConnectWithoutJobInput = {
@@ -6155,6 +6373,7 @@ export namespace Prisma {
     lockedParams?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assets?: AssetUpdateManyWithoutPresetNestedInput
   }
 
@@ -6169,6 +6388,7 @@ export namespace Prisma {
     lockedParams?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assets?: AssetUncheckedUpdateManyWithoutPresetNestedInput
   }
 
@@ -6190,24 +6410,30 @@ export namespace Prisma {
 
   export type GenerationJobCreateWithoutAssetsInput = {
     id?: string
+    name: string
     variables: JsonNullValueInput | InputJsonValue
     count?: number
+    completed?: number
     status?: $Enums.JobStatus
     error?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    deletedAt?: Date | string | null
     preset: StylePresetCreateNestedOneWithoutJobsInput
   }
 
   export type GenerationJobUncheckedCreateWithoutAssetsInput = {
     id?: string
+    name: string
     presetId: string
     variables: JsonNullValueInput | InputJsonValue
     count?: number
+    completed?: number
     status?: $Enums.JobStatus
     error?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    deletedAt?: Date | string | null
   }
 
   export type GenerationJobCreateOrConnectWithoutAssetsInput = {
@@ -6226,6 +6452,7 @@ export namespace Prisma {
     lockedParams: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    deletedAt?: Date | string | null
     jobs?: GenerationJobCreateNestedManyWithoutPresetInput
   }
 
@@ -6240,6 +6467,7 @@ export namespace Prisma {
     lockedParams: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
+    deletedAt?: Date | string | null
     jobs?: GenerationJobUncheckedCreateNestedManyWithoutPresetInput
   }
 
@@ -6261,24 +6489,30 @@ export namespace Prisma {
 
   export type GenerationJobUpdateWithoutAssetsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
     variables?: JsonNullValueInput | InputJsonValue
     count?: IntFieldUpdateOperationsInput | number
+    completed?: IntFieldUpdateOperationsInput | number
     status?: EnumJobStatusFieldUpdateOperationsInput | $Enums.JobStatus
     error?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     preset?: StylePresetUpdateOneRequiredWithoutJobsNestedInput
   }
 
   export type GenerationJobUncheckedUpdateWithoutAssetsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
     presetId?: StringFieldUpdateOperationsInput | string
     variables?: JsonNullValueInput | InputJsonValue
     count?: IntFieldUpdateOperationsInput | number
+    completed?: IntFieldUpdateOperationsInput | number
     status?: EnumJobStatusFieldUpdateOperationsInput | $Enums.JobStatus
     error?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type StylePresetUpsertWithoutAssetsInput = {
@@ -6303,6 +6537,7 @@ export namespace Prisma {
     lockedParams?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     jobs?: GenerationJobUpdateManyWithoutPresetNestedInput
   }
 
@@ -6317,17 +6552,21 @@ export namespace Prisma {
     lockedParams?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     jobs?: GenerationJobUncheckedUpdateManyWithoutPresetNestedInput
   }
 
   export type GenerationJobCreateManyPresetInput = {
     id?: string
+    name: string
     variables: JsonNullValueInput | InputJsonValue
     count?: number
+    completed?: number
     status?: $Enums.JobStatus
     error?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    deletedAt?: Date | string | null
   }
 
   export type AssetCreateManyPresetInput = {
@@ -6342,38 +6581,48 @@ export namespace Prisma {
     meta: JsonNullValueInput | InputJsonValue
     tags?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    deletedAt?: Date | string | null
   }
 
   export type GenerationJobUpdateWithoutPresetInput = {
     id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
     variables?: JsonNullValueInput | InputJsonValue
     count?: IntFieldUpdateOperationsInput | number
+    completed?: IntFieldUpdateOperationsInput | number
     status?: EnumJobStatusFieldUpdateOperationsInput | $Enums.JobStatus
     error?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assets?: AssetUpdateManyWithoutJobNestedInput
   }
 
   export type GenerationJobUncheckedUpdateWithoutPresetInput = {
     id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
     variables?: JsonNullValueInput | InputJsonValue
     count?: IntFieldUpdateOperationsInput | number
+    completed?: IntFieldUpdateOperationsInput | number
     status?: EnumJobStatusFieldUpdateOperationsInput | $Enums.JobStatus
     error?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assets?: AssetUncheckedUpdateManyWithoutJobNestedInput
   }
 
   export type GenerationJobUncheckedUpdateManyWithoutPresetInput = {
     id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
     variables?: JsonNullValueInput | InputJsonValue
     count?: IntFieldUpdateOperationsInput | number
+    completed?: IntFieldUpdateOperationsInput | number
     status?: EnumJobStatusFieldUpdateOperationsInput | $Enums.JobStatus
     error?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type AssetUpdateWithoutPresetInput = {
@@ -6387,6 +6636,7 @@ export namespace Prisma {
     meta?: JsonNullValueInput | InputJsonValue
     tags?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     job?: GenerationJobUpdateOneWithoutAssetsNestedInput
   }
 
@@ -6402,6 +6652,7 @@ export namespace Prisma {
     meta?: JsonNullValueInput | InputJsonValue
     tags?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type AssetUncheckedUpdateManyWithoutPresetInput = {
@@ -6416,6 +6667,7 @@ export namespace Prisma {
     meta?: JsonNullValueInput | InputJsonValue
     tags?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type AssetCreateManyJobInput = {
@@ -6430,6 +6682,7 @@ export namespace Prisma {
     meta: JsonNullValueInput | InputJsonValue
     tags?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    deletedAt?: Date | string | null
   }
 
   export type AssetUpdateWithoutJobInput = {
@@ -6443,6 +6696,7 @@ export namespace Prisma {
     meta?: JsonNullValueInput | InputJsonValue
     tags?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     preset?: StylePresetUpdateOneWithoutAssetsNestedInput
   }
 
@@ -6458,6 +6712,7 @@ export namespace Prisma {
     meta?: JsonNullValueInput | InputJsonValue
     tags?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type AssetUncheckedUpdateManyWithoutJobInput = {
@@ -6472,6 +6727,7 @@ export namespace Prisma {
     meta?: JsonNullValueInput | InputJsonValue
     tags?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
 

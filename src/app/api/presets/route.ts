@@ -4,7 +4,8 @@ import { prisma } from "@/lib/db";
 
 export async function GET() {
   const presets = await prisma.stylePreset.findMany({
-    orderBy: { createdAt: "asc" },
+    where: { deletedAt: null },
+    orderBy: { createdAt: "desc" },
   });
   return NextResponse.json(presets);
 }
