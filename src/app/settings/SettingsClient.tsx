@@ -5,7 +5,13 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   DEFAULT_SETTINGS,
+  PROVIDER_KINDS,
+  PROVIDER_LABELS,
+  PROVIDER_MODELS,
+  SECRET_PROVIDERS,
   SECTIONS,
+  type ProviderKind,
+  type SecretProvider,
   type Settings,
   type SettingsSection,
 } from "@/lib/settings";
@@ -174,6 +180,59 @@ function Field({
 
 type Setter<T> = <K extends keyof T>(key: K, value: T[K]) => void;
 
+function ModelSelect({
+  value,
+  options,
+  onChange,
+}: {
+  value: string;
+  options: string[];
+  onChange: (v: string) => void;
+}) {
+  return (
+    <select
+      className={`${field} w-full`}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    >
+      {options.map((m) => (
+        <option key={m} value={m}>
+          {m}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+function ApiKeyField({
+  provider,
+  draft,
+  set,
+}: {
+  provider: SecretProvider;
+  draft: Settings["provider"];
+  set: Setter<Settings["provider"]>;
+}) {
+  const cfg = draft[provider];
+  return (
+    <Field label="API Key">
+      <input
+        className={field}
+        value={cfg.apiKey}
+        onChange={(e) =>
+          set(provider, { ...cfg, apiKey: e.target.value })
+        }
+        placeholder="输入 API Key（保存后仅显示首尾各 6 位）"
+        autoComplete="off"
+        spellCheck={false}
+      />
+      <span className="mt-1 block text-[11px] text-muted">
+        密钥加密入库且不会回传前端，留空或保持掩码即沿用已保存的密钥。
+      </span>
+    </Field>
+  );
+}
+
 function Provider({
   draft,
   set,
@@ -181,24 +240,96 @@ function Provider({
   draft: Settings["provider"];
   set: Setter<Settings["provider"]>;
 }) {
+  const active = draft.active;
+  const isSecret = (SECRET_PROVIDERS as readonly string[]).includes(active);
+
   return (
     <>
-      <Field label="Draw Things 地址">
-        <input
-          className={field}
-          value={draft.drawThingsUrl}
-          onChange={(e) => set("drawThingsUrl", e.target.value)}
-          placeholder="http://127.0.0.1:7860"
-        />
+      <Field label="生成服务">
+        <select
+          className={`${field} w-full`}
+          value={active}
+          onChange={(e) => set("active", e.target.value as ProviderKind)}
+        >
+          {PROVIDER_KINDS.map((k) => (
+            <option key={k} value={k}>
+              {PROVIDER_LABELS[k]}
+            </option>
+          ))}
+        </select>
       </Field>
-      <Field label="txt2img 路径">
-        <input
-          className={field}
-          value={draft.txt2imgPath}
-          onChange={(e) => set("txt2imgPath", e.target.value)}
-          placeholder="/sdapi/v1/txt2img"
-        />
-      </Field>
+
+      {active === "draw-things" && (
+        <>
+          <Field label="Draw Things 地址">
+            <input
+              className={field}
+              value={draft.drawThings.url}
+              onChange={(e) =>
+                set("drawThings", { ...draft.drawThings, url: e.target.value })
+              }
+              placeholder="http://127.0.0.1:7860"
+            />
+          </Field>
+          <Field label="txt2img 路径">
+            <input
+              className={field}
+              value={draft.drawThings.txt2imgPath}
+              onChange={(e) =>
+                set("drawThings", {
+                  ...draft.drawThings,
+                  txt2imgPath: e.target.value,
+                })
+              }
+              placeholder="/sdapi/v1/txt2img"
+            />
+          </Field>
+        </>
+      )}
+
+      {active === "ollama" && (
+        <>
+          <Field label="Ollama 地址">
+            <input
+              className={field}
+              value={draft.ollama.url}
+              onChange={(e) =>
+                set("ollama", { ...draft.ollama, url: e.target.value })
+              }
+              placeholder="http://127.0.0.1:11434"
+            />
+          </Field>
+          <Field label="模型">
+            <ModelSelect
+              value={draft.ollama.model}
+              options={PROVIDER_MODELS.ollama}
+              onChange={(v) => set("ollama", { ...draft.ollama, model: v })}
+            />
+          </Field>
+        </>
+      )}
+
+      {isSecret && (
+        <>
+          <ApiKeyField
+            provider={active as SecretProvider}
+            draft={draft}
+            set={set}
+          />
+          <Field label="模型">
+            <ModelSelect
+              value={draft[active as SecretProvider].model}
+              options={PROVIDER_MODELS[active as SecretProvider]}
+              onChange={(v) =>
+                set(active as SecretProvider, {
+                  ...draft[active as SecretProvider],
+                  model: v,
+                })
+              }
+            />
+          </Field>
+        </>
+      )}
     </>
   );
 }

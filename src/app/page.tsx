@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Modal } from "@/components/Modal";
 import { PresetForm, type Preset } from "@/components/PresetForm";
 import { estimateUnits } from "@/lib/estimate";
@@ -24,9 +24,29 @@ function ratio(w: number, h: number): string {
 
 const field = "w-full rounded border border-border bg-background p-2 text-sm";
 
+type GenDefaults = {
+  width: number;
+  height: number;
+  steps: number;
+  guidanceScale: number;
+  count: number;
+};
+
 export default function GeneratePage() {
+  return (
+    <Suspense
+      fallback={<div className="mx-auto max-w-3xl p-8 text-sm text-muted">加载中…</div>}
+    >
+      <GeneratePageInner />
+    </Suspense>
+  );
+}
+
+function GeneratePageInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [presets, setPresets] = useState<Preset[]>([]);
+  const [genDefaults, setGenDefaults] = useState<GenDefaults | null>(null);
   const [presetId, setPresetId] = useState("");
   const [preset, setPreset] = useState<Preset | null>(null);
   const [newPreset, setNewPreset] = useState(false);
@@ -59,6 +79,82 @@ export default function GeneratePage() {
         setPresets(p);
       });
   }, []);
+
+  // 加载用户设置中的生成默认值（New Generation 的初始/重置基准）
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((r) => r.json())
+      .then((s) => {
+        const g = s?.generation;
+        if (!g) return;
+        setGenDefaults({
+          width: g.defaultWidth,
+          height: g.defaultHeight,
+          steps: g.defaultSteps,
+          guidanceScale: g.defaultGuidanceScale,
+          count: g.defaultCount,
+        });
+      })
+      .catch(() => {});
+  }, []);
+
+  // 把表单清空回「全新生成」状态，尺寸/步数等取用户设置默认值
+  function resetForm(d: GenDefaults) {
+    setPresetId("");
+    setPreset(null);
+    setNewPreset(false);
+    setName("");
+    setSubject("");
+    setAngle("");
+    setPose("");
+    setExtraPositive("");
+    setExtraNegative("");
+    setWidth(d.width);
+    setHeight(d.height);
+    setCount(d.count);
+    setSteps(d.steps);
+    setGuidanceScale(d.guidanceScale);
+    setSeed(-1);
+    setLockRatio(false);
+    setError("");
+  }
+
+  // 依据 URL 参数驱动：带 presetId 则「生成同款」预填；否则重置为全新生成。
+  // useSearchParams 对导航变化敏感，所以点侧边栏 New Generation（→ "/"）会触发重置。
+  const sp = searchParams.toString();
+  useEffect(() => {
+    if (presets.length === 0 || !genDefaults) return;
+    const pid = searchParams.get("presetId");
+    if (!pid) {
+      resetForm(genDefaults);
+      return;
+    }
+    const p = presets.find((x) => x.id === pid);
+    if (!p) return;
+
+    applyPreset(p);
+    const num = (k: string, set: (n: number) => void) => {
+      const raw = searchParams.get(k);
+      if (raw != null && raw !== "" && !Number.isNaN(Number(raw))) set(Number(raw));
+    };
+    const str = (k: string, set: (s: string) => void) => {
+      const raw = searchParams.get(k);
+      if (raw != null) set(raw);
+    };
+    str("name", setName);
+    str("subject", setSubject);
+    str("extraPositive", setExtraPositive);
+    str("extraNegative", setExtraNegative);
+    if (p.category !== "character") str("angle", setAngle);
+    str("pose", setPose);
+    num("width", setWidth);
+    num("height", setHeight);
+    if (p.category !== "character") num("count", setCount);
+    num("steps", setSteps);
+    num("guidanceScale", setGuidanceScale);
+    num("seed", setSeed);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sp, presets, genDefaults]);
 
   function snap8(n: number): number {
     return Math.max(128, Math.min(1024, Math.round(n / 8) * 8));

@@ -38,6 +38,7 @@ export async function GET(
     error: job.error,
     presetId: job.presetId,
     preset: job.preset,
+    variables: job.variables,
     assets,
   });
 }

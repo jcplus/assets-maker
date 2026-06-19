@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2026-06-19
+
+### Added
+- **多生成服务**: the settings 生成服务 section is now a dropdown to pick the active provider — Draw Things, Ollama, Claude, OpenAI, Google — with per-provider config. Ollama exposes a host URL plus a model picker (flux.1-schnell/dev, stable-diffusion-3.5-large/medium, sdxl-turbo); Google defaults to Gemini 3.1 Flash-Lite.
+- **API Key 入库与掩码**: Claude/OpenAI/Google providers each take an API Key stored under the user. Keys are never returned to the frontend in plaintext — the UI only ever sees the first 6 and last 6 characters with the middle masked by asterisks. Submitting a masked or empty value preserves the previously saved key.
+
+## [0.7.0] - 2026-06-19
+
+### Added
+- **生成参数面板**: the generation detail page now shows a 生成参数 section above the thumbnails, listing 主体 / 视角 / 姿势 / 尺寸 / 数量 / 步数 / CFG / Seed and any 追加正面·负面 from the stored job variables. The jobs API now returns `variables` to support this.
+
+### Changed
+- **生成同款**: the header link on the generation detail page changed from "← 生成台" to "生成同款". It navigates to New Generation with the job's parameters encoded as query params, and the form auto-fills (preset, 主体, 视角/姿势, 尺寸, 数量, 步数, CFG, Seed, 追加提示词) on load.
+
+## [0.6.1] - 2026-06-19
+
+### Changed
+- **生成详情缩略图**: thumbnails now use a square container with `object-contain` so images display in full (no cropping) and self-fit by aspect ratio. Clicking a thumbnail opens the shared preview Modal.
+
 ## [0.6.0] - 2026-06-19
 
 ### Added
