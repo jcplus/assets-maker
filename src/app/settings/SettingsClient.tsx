@@ -341,9 +341,10 @@ function Generation({
   draft: Settings["generation"];
   set: Setter<Settings["generation"]>;
 }) {
-  const num = (k: keyof Settings["generation"]) => (
+  const num = (k: keyof Settings["generation"], step?: number) => (
     <input
       type="number"
+      step={step}
       className={`${field} w-32`}
       value={draft[k]}
       onChange={(e) => set(k, Number(e.target.value))}
@@ -351,8 +352,8 @@ function Generation({
   );
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-      <Field label="默认宽度">{num("defaultWidth")}</Field>
-      <Field label="默认高度">{num("defaultHeight")}</Field>
+      <Field label="默认宽度">{num("defaultWidth", 8)}</Field>
+      <Field label="默认高度">{num("defaultHeight", 8)}</Field>
       <Field label="默认数量">{num("defaultCount")}</Field>
       <Field label="默认步数">{num("defaultSteps")}</Field>
       <Field label="默认 CFG">{num("defaultGuidanceScale")}</Field>

@@ -22,8 +22,8 @@ const schema = z.object({
   extraNegative: z.string().default(""),
   /** 「同角色换动作/表情」：来源资产 id —— 复用其 seed/subject 并注入一致性约束 */
   parentAssetId: z.string().optional(),
-  width: z.number().int().min(128).max(4096),
-  height: z.number().int().min(128).max(4096),
+  width: z.number().int().min(128).max(4096).multipleOf(8),
+  height: z.number().int().min(128).max(4096).multipleOf(8),
   count: z.number().int().min(1).max(20).default(4),
   steps: z.number().int().min(1).max(100).default(8),
   guidanceScale: z.number().min(1).max(10).default(4),

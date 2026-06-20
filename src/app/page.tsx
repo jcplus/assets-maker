@@ -214,6 +214,10 @@ function GeneratePageInner() {
 
   async function generate() {
     if (!presetId) return;
+    if (width % 8 !== 0 || height % 8 !== 0) {
+      setError("宽度和高度必须是 8 的倍数");
+      return;
+    }
     setBusy(true);
     setError("");
     try {

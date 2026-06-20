@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.1] - 2026-06-20
+
+### Changed
+- **尺寸 8 的倍数约束**: settings 生成默认值的默认宽度/默认高度 input 现在以 8 为步进。点击生成前前端会校验宽高均为 8 的倍数，否则提示并阻止；`/api/generate` 后端 schema 同样用 `multipleOf(8)` 校验 width/height。
+
 ## [0.8.0] - 2026-06-19
 
 ### Added
